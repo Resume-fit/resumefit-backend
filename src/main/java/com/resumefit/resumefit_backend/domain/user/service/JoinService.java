@@ -16,7 +16,7 @@ public class JoinService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void joinProcess(JoinRequestDto joinDto) {
+    public void joinProcess(JoinRequestDto joinDto, String fileKey) {
         // 1. 로그인 아이디 중복 검사
         if (userRepository.existsByEmail(joinDto.getEmail())) {
             // 실제 프로젝트에서는 Custom Exception을 사용하는 것이 좋습니다.
@@ -31,6 +31,7 @@ public class JoinService {
         user.setBirth(joinDto.getBirth());
         user.setPhoneNumber(joinDto.getPhoneNumber());
         user.setPassword(bCryptPasswordEncoder.encode(joinDto.getPassword()));
+        user.setPhotoKey(fileKey);
         user.setAcademic(joinDto.getAcademic());
         user.setSchoolName(joinDto.getSchoolName());
         user.setMajor(joinDto.getMajor());
