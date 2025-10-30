@@ -32,6 +32,7 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
+    private String photoKey;
 
     @Enumerated(EnumType.STRING) // DB에 enum 이름을 문자열로 저장
     private AcademicBackground academic;
