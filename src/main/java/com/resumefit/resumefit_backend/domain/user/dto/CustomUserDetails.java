@@ -33,6 +33,10 @@ public class CustomUserDetails implements UserDetails {
         return user.getEmail();
     }
 
+    public Long getId() {
+        return user.getId();
+    }
+
     // 아래 메서드들은 필요에 따라 계정 상태를 체크하는 로직을 추가할 수 있습니다.
     @Override
     public boolean isAccountNonExpired() {
