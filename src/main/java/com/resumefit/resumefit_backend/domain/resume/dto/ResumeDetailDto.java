@@ -1,10 +1,11 @@
 package com.resumefit.resumefit_backend.domain.resume.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -17,5 +18,4 @@ public class ResumeDetailDto {
     private LocalDateTime createdAt; // 생성 일시
     private LocalDateTime updatedAt; // 최종 수정 일시
     private String pdfViewUrl;
-
 }

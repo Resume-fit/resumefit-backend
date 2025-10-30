@@ -15,8 +15,7 @@ import java.util.List;
 @Data
 public class Skill {
 
-    @Id
-    private Long id;
+    @Id private Long id;
 
     private String name;
     private String category;

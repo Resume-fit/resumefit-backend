@@ -8,9 +8,10 @@ import com.resumefit.resumefit_backend.domain.user.mapper.UserMapper;
 import com.resumefit.resumefit_backend.domain.user.repository.UserRepository;
 import com.resumefit.resumefit_backend.exception.CustomException;
 import com.resumefit.resumefit_backend.exception.ErrorCode;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,10 @@ public class UserService {
 
         Long id = userDetails.getId();
 
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         UserInfoDto userInfoDto = userMapper.toUserInfoDto(user);
         if (user.getPhotoKey() != null) {
             userInfoDto.setPhoto(s3Service.getFileUrl(user.getPhotoKey()));
@@ -33,13 +36,15 @@ public class UserService {
         return userInfoDto;
     }
 
-    public UserInfoDto setUserInfo(CustomUserDetails userDetails, UserInfoDto userInfoDto,
-        String fileKey) {
+    public UserInfoDto setUserInfo(
+            CustomUserDetails userDetails, UserInfoDto userInfoDto, String fileKey) {
 
         Long id = userDetails.getId();
 
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         userMapper.updateUserFromDto(userInfoDto, user);
 
@@ -59,5 +64,4 @@ public class UserService {
 
         return upadatedUserInfoDto;
     }
-
 }

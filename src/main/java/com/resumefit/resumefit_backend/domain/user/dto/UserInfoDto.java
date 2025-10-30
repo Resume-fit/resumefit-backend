@@ -12,5 +12,4 @@ public class UserInfoDto {
     private String academic;
     private String schoolName;
     private String major;
-
 }

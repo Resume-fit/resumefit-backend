@@ -18,17 +18,20 @@ import com.resumefit.resumefit_backend.domain.user.entity.User;
 import com.resumefit.resumefit_backend.domain.user.repository.UserRepository;
 import com.resumefit.resumefit_backend.exception.CustomException;
 import com.resumefit.resumefit_backend.exception.ErrorCode;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -44,16 +47,18 @@ public class ResumeService {
     public void processResumePost(ResumePostDto resumePostDto, CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String photoBase64 = null;
-//        if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
-//            byte[] photoBytes = s3Service.downloadFileAsBytes(user.getPhotoKey());
-//            if (photoBytes != null) {
-//                photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
-//            }
-//        }
+        //        if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
+        //            byte[] photoBytes = s3Service.downloadFileAsBytes(user.getPhotoKey());
+        //            if (photoBytes != null) {
+        //                photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
+        //            }
+        //        }
         // --- ⬇️ 3. 디버깅 로그 추가 ⬇️ ---
         log.info("PDF 생성 시작 - User: {}", user.getEmail());
 
@@ -74,19 +79,20 @@ public class ResumeService {
         }
         // --- ⬆️ 디버깅 로그 끝 ⬆️ ---
 
-        String htmlContent = htmlGenerationService.generateResumeHtml(user, resumePostDto,
-            photoBase64);
+        String htmlContent =
+                htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
 
         PDFInfoDto pdfInfoDto = htmlToPdf(htmlContent, user, resumePostDto);
 
-        Resume resume = Resume.builder()
-            .user(user)
-            .title(resumePostDto.getResumeTitle())
-            .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
-            .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
-            .build();
+        Resume resume =
+                Resume.builder()
+                        .user(user)
+                        .title(resumePostDto.getResumeTitle())
+                        .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
+                        .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build();
 
         Resume savedResume = resumeRepository.save(resume);
     }
@@ -101,8 +107,8 @@ public class ResumeService {
             ClassPathResource fontResource = new ClassPathResource("fonts/NotoSansKR-Regular.ttf");
             byte[] fontBytes = fontResource.getInputStream().readAllBytes();
 
-            FontProgram fontProgram = FontProgramFactory.createFont(fontBytes,
-                true); // true = embed
+            FontProgram fontProgram =
+                    FontProgramFactory.createFont(fontBytes, true); // true = embed
             fontProvider.addFont(fontProgram);
 
             properties.setFontProvider(fontProvider);
@@ -118,24 +124,27 @@ public class ResumeService {
         try {
             // S3에 저장될 파일명 생성
             // 파일명에 특수문자나 공백이 있다면 제거하거나 URL 인코딩 필요
-            String desiredFileName = user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
-                + "_" + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
-                + "_" + System.currentTimeMillis() + ".pdf";
+            String desiredFileName =
+                    user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
+                            + "_"
+                            + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
+                            + "_"
+                            + System.currentTimeMillis()
+                            + ".pdf";
             fileKey = s3Service.uploadPdfBytes(pdfBytes, desiredFileName);
         } catch (Exception e) {
             throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
         }
-        return PDFInfoDto.builder()
-            .fileUrl(s3Service.getFileUrl(fileKey))
-            .fileKey(fileKey)
-            .build();
+        return PDFInfoDto.builder().fileUrl(s3Service.getFileUrl(fileKey)).fileKey(fileKey).build();
     }
 
     public List<ResumeSummaryDto> getAllMyResume(CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         List<Resume> resumeList = resumeRepository.findByUser(user);
         return resumeMapper.toResumeSummaryDtoList(resumeList);
     }
@@ -144,8 +153,10 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         // Resume 엔티티 조회
-        Resume resume = resumeRepository.findById(resumeId)
-            .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+        Resume resume =
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
@@ -170,8 +181,10 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         // 1. 이력서가 존재하는지 조회
-        Resume resume = resumeRepository.findById(resumeId)
-            .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+        Resume resume =
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 2. 현재 로그인한 사용자가 이력서의 소유자인지 확인
         if (!resume.getUser().getId().equals(userId)) {
@@ -192,11 +205,11 @@ public class ResumeService {
 
         // 4. DTO로 변환하여 반환 (Builder 사용)
         return ResumeDetailDto.builder()
-            .title(resume.getTitle())
-            .fileKey(resume.getFileKey()) // 관리용 키
-            .createdAt(resume.getCreatedAt())
-            .updatedAt(resume.getUpdatedAt())
-            .pdfViewUrl(presignedUrl) // ✅ PDF를 볼 수 있는 URL
-            .build();
+                .title(resume.getTitle())
+                .fileKey(resume.getFileKey()) // 관리용 키
+                .createdAt(resume.getCreatedAt())
+                .updatedAt(resume.getUpdatedAt())
+                .pdfViewUrl(presignedUrl) // ✅ PDF를 볼 수 있는 URL
+                .build();
     }
 }

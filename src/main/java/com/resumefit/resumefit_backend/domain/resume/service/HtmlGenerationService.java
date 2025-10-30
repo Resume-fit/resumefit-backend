@@ -2,7 +2,9 @@ package com.resumefit.resumefit_backend.domain.resume.service;
 
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
 import com.resumefit.resumefit_backend.domain.user.entity.User;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
