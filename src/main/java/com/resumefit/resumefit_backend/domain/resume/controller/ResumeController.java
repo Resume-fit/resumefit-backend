@@ -33,7 +33,8 @@ public class ResumeController {
     }
 
     @GetMapping
-    ResponseEntity<List<ResumeSummaryDto>> getAllMyResume(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    ResponseEntity<List<ResumeSummaryDto>> getAllMyResume(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(resumeService.getAllMyResume(userDetails));
     }
 
@@ -45,7 +46,8 @@ public class ResumeController {
     }
 
     @DeleteMapping("/{resumeId}")
-    ResponseEntity<Void> deleteResume(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("resumeId") Long resumeId) {
+    ResponseEntity<Void> deleteResume(@AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable("resumeId") Long resumeId) {
         resumeService.deleteResume(resumeId, userDetails);
         return ResponseEntity.ok().build();
     }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResumePostDto {
+
     private String resumeTitle; // 이력서 제목
 
     // 기본 정보 (간소화)
@@ -38,6 +39,7 @@ public class ResumePostDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EducationDto {
+
         private String schoolName;
         private String major;
         private String degree;
@@ -52,6 +54,7 @@ public class ResumePostDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ExperienceDto {
+
         private String companyName;
         private String position;
         private LocalDate startDate;
@@ -63,6 +66,7 @@ public class ResumePostDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CertificateDto {
+
         private String certificateName;
         private LocalDate acquisitionDate; // 취득일
     }
@@ -71,6 +75,7 @@ public class ResumePostDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProjectDto {
+
         private String projectName;
         private String description;
         private LocalDate startDate;
@@ -82,6 +87,7 @@ public class ResumePostDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AwardDto {
+
         private String activityName;
         private String organization;
         private String description;

@@ -33,7 +33,8 @@ public class UserService {
         return userInfoDto;
     }
 
-    public UserInfoDto setUserInfo(CustomUserDetails userDetails, UserInfoDto userInfoDto, String fileKey) {
+    public UserInfoDto setUserInfo(CustomUserDetails userDetails, UserInfoDto userInfoDto,
+        String fileKey) {
 
         Long id = userDetails.getId();
 

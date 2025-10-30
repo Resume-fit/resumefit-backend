@@ -19,11 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
     private final S3Service s3Service;
 
     @GetMapping
-    private ResponseEntity<UserInfoDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    private ResponseEntity<UserInfoDto> getUserInfo(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(userService.getUserInfo(userDetails));
     }
 
@@ -31,8 +33,7 @@ public class UserController {
     public ResponseEntity<UserInfoDto> setUserInfo(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestPart(value = "userInfoDto", required = false) UserInfoDto userInfoDto,
-        @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException
-    {
+        @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException {
         if (userInfoDto == null) {
             userInfoDto = new UserInfoDto(); // 빈 객체 생성 또는 기존 정보 조회
         }

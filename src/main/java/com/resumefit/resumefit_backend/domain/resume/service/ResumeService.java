@@ -74,7 +74,8 @@ public class ResumeService {
         }
         // --- ⬆️ 디버깅 로그 끝 ⬆️ ---
 
-        String htmlContent = htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
+        String htmlContent = htmlGenerationService.generateResumeHtml(user, resumePostDto,
+            photoBase64);
 
         PDFInfoDto pdfInfoDto = htmlToPdf(htmlContent, user, resumePostDto);
 
@@ -89,6 +90,7 @@ public class ResumeService {
 
         Resume savedResume = resumeRepository.save(resume);
     }
+
     private PDFInfoDto htmlToPdf(String htmlContent, User user, ResumePostDto resumePostDto) {
         byte[] pdfBytes;
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -99,7 +101,8 @@ public class ResumeService {
             ClassPathResource fontResource = new ClassPathResource("fonts/NotoSansKR-Regular.ttf");
             byte[] fontBytes = fontResource.getInputStream().readAllBytes();
 
-            FontProgram fontProgram = FontProgramFactory.createFont(fontBytes, true); // true = embed
+            FontProgram fontProgram = FontProgramFactory.createFont(fontBytes,
+                true); // true = embed
             fontProvider.addFont(fontProgram);
 
             properties.setFontProvider(fontProvider);
@@ -136,6 +139,7 @@ public class ResumeService {
         List<Resume> resumeList = resumeRepository.findByUser(user);
         return resumeMapper.toResumeSummaryDtoList(resumeList);
     }
+
     public void deleteResume(Long resumeId, CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 

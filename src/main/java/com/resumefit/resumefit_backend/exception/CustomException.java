@@ -7,5 +7,6 @@ public class CustomException extends RuntimeException {
 
     int errorCode;
 
-    public CustomException(ErrorCode errorCode) {}
+    public CustomException(ErrorCode errorCode) {
+    }
 }

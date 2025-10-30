@@ -49,7 +49,8 @@ public class S3Service {
                 .getObjectRequest(getObjectRequest)
                 .build();
 
-            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(
+                getObjectPresignRequest);
             return presignedRequest.url().toString();
         } catch (Exception e) {
             return null; // 실패 시 null 반환 또는 예외 던지기
@@ -73,7 +74,8 @@ public class S3Service {
             .build();
 
         // RequestBody 생성 (InputStream 사용)
-        RequestBody requestBody = RequestBody.fromInputStream(file.getInputStream(), file.getSize());
+        RequestBody requestBody = RequestBody.fromInputStream(file.getInputStream(),
+            file.getSize());
 
         // S3에 파일 업로드
         s3Client.putObject(putObjectRequest, requestBody);
@@ -107,6 +109,7 @@ public class S3Service {
 
         return fileKey; // S3에 저장된 최종 키 반환
     }
+
     public String getFileUrl(String fileName) {
         // AWS SDK v2는 getUrl()을 직접 제공하지 않습니다. URL 형식을 직접 구성합니다.
         // 형식: https://{bucketName}.s3.{region}.amazonaws.com/{fileName}
@@ -147,7 +150,8 @@ public class S3Service {
                 .build();
 
             // getObjectAsBytes: 파일을 바이트 배열로 직접 다운로드
-            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
+            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(
+                getObjectRequest);
             return objectBytes.asByteArray();
         } catch (Exception e) {
             log.error("S3에서 파일 다운로드 실패. Key: {}, Error: {}", fileKey, e.getMessage(), e);

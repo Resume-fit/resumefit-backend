@@ -11,6 +11,7 @@ public interface ResumeMapper {
 
     // Resume toResumeEntity(ResumePostDto resumePostDto);
     ResumeSummaryDto toResumeSummaryDto(Resume resume);
+
     List<ResumeSummaryDto> toResumeSummaryDtoList(List<Resume> resumeList);
 
 }
