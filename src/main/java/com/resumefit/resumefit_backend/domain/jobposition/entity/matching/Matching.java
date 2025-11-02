@@ -1,4 +1,4 @@
-package com.resumefit.resumefit_backend.domain.matching;
+package com.resumefit.resumefit_backend.domain.jobposition.entity.matching;
 
 import com.resumefit.resumefit_backend.domain.jobposition.entity.JobPosition;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
