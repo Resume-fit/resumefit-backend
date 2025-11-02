@@ -9,5 +9,4 @@ public class PDFInfoDto {
 
     private String fileUrl;
     private String fileKey;
-
 }
