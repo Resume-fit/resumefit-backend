@@ -1,4 +1,4 @@
-package com.resumefit.resumefit_backend.domain.company.entity;
+package com.resumefit.resumefit_backend.domain.resume.company.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

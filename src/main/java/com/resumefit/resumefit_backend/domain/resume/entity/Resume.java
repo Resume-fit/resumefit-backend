@@ -50,7 +50,6 @@ public class Resume {
     private LocalDateTime createdAt; // 생성 일시
     private LocalDateTime updatedAt; // 최종 수정 일시
 
-    // 이력서에 포함된 기술 스택 목록 (중간 테이블을 통해 연결)
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResumeSkill> skills = new ArrayList<>();
 

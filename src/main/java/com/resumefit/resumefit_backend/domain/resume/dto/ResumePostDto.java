@@ -14,8 +14,7 @@ public class ResumePostDto {
 
     private String resumeTitle; // 이력서 제목
 
-    // 기본 정보 (간소화)
-    private String profileImageS3Url; // 프로필 사진 S3 주소 (선택 사항)
+    private String profileImageS3Url; // 프로필 사진 S3 주소
     private String introduction; // 간단 자기소개
 
     // 학력
@@ -45,7 +44,7 @@ public class ResumePostDto {
         private String major;
         private String degree;
         private String status;
-        private LocalDate startDate; // LocalDate 사용 예시
+        private LocalDate startDate; 
         private LocalDate endDate;
         private Double gpa; // 내 학점 (예: 4.0)
         private Double maxGpa; // 최대 학점 (예: 4.5)

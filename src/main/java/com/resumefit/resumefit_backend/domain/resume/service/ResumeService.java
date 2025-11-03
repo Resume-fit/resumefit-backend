@@ -48,9 +48,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         User user =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            userRepository
+                .findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String photoBase64 = null;
         //        if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
@@ -59,7 +59,6 @@ public class ResumeService {
         //                photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
         //            }
         //        }
-        // --- ⬇️ 3. 디버깅 로그 추가 ⬇️ ---
         log.info("PDF 생성 시작 - User: {}", user.getEmail());
 
         if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
@@ -77,22 +76,21 @@ public class ResumeService {
         } else {
             log.warn("User 엔티티에 photoKey가 없습니다. 프로필 사진을 건너뜁니다.");
         }
-        // --- ⬆️ 디버깅 로그 끝 ⬆️ ---
 
         String htmlContent =
-                htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
+            htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
 
         PDFInfoDto pdfInfoDto = htmlToPdf(htmlContent, user, resumePostDto);
 
         Resume resume =
-                Resume.builder()
-                        .user(user)
-                        .title(resumePostDto.getResumeTitle())
-                        .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
-                        .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .build();
+            Resume.builder()
+                .user(user)
+                .title(resumePostDto.getResumeTitle())
+                .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
+                .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
         Resume savedResume = resumeRepository.save(resume);
     }
@@ -108,7 +106,7 @@ public class ResumeService {
             byte[] fontBytes = fontResource.getInputStream().readAllBytes();
 
             FontProgram fontProgram =
-                    FontProgramFactory.createFont(fontBytes, true); // true = embed
+                FontProgramFactory.createFont(fontBytes, true); // true = embed
             fontProvider.addFont(fontProgram);
 
             properties.setFontProvider(fontProvider);
@@ -119,18 +117,15 @@ public class ResumeService {
             throw new CustomException(ErrorCode.PDF_CONVERSION_FAILED);
         }
 
-        // PDF 파일을 S3에 업로드하고 파일 키(이름) 받기
         String fileKey;
         try {
-            // S3에 저장될 파일명 생성
-            // 파일명에 특수문자나 공백이 있다면 제거하거나 URL 인코딩 필요
             String desiredFileName =
-                    user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
-                            + "_"
-                            + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
-                            + "_"
-                            + System.currentTimeMillis()
-                            + ".pdf";
+                user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
+                    + "_"
+                    + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
+                    + "_"
+                    + System.currentTimeMillis()
+                    + ".pdf";
             fileKey = s3Service.uploadPdfBytes(pdfBytes, desiredFileName);
         } catch (Exception e) {
             throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
@@ -142,9 +137,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         User user =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+            userRepository
+                .findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         List<Resume> resumeList = resumeRepository.findByUser(user);
         return resumeMapper.toResumeSummaryDtoList(resumeList);
     }
@@ -154,9 +149,9 @@ public class ResumeService {
 
         // Resume 엔티티 조회
         Resume resume =
-                resumeRepository
-                        .findById(resumeId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+            resumeRepository
+                .findById(resumeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
@@ -172,7 +167,6 @@ public class ResumeService {
             }
         }
 
-        // Resume 엔티티 삭제
         resumeRepository.delete(resume);
     }
 
@@ -180,18 +174,16 @@ public class ResumeService {
     public ResumeDetailDto getResume(Long resumeId, CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 
-        // 1. 이력서가 존재하는지 조회
         Resume resume =
-                resumeRepository
-                        .findById(resumeId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+            resumeRepository
+                .findById(resumeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
-        // 2. 현재 로그인한 사용자가 이력서의 소유자인지 확인
         if (!resume.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        // 3. (추가) 이력서의 fileKey로 Pre-signed URL 생성
+        // 이력서의 fileKey로 Pre-signed URL 생성
         String fileKey = resume.getFileKey();
         String presignedUrl = null; // 기본값 null
 
@@ -199,17 +191,16 @@ public class ResumeService {
             // S3Service를 통해 5분간 유효한 임시 URL 생성
             presignedUrl = s3Service.generatePresignedUrl(fileKey, Duration.ofMinutes(5));
         } else {
-            // 이력서는 존재하나 연결된 PDF 파일 키가 없는 경우 (로깅)
+            // 이력서는 존재하나 연결된 PDF 파일 키가 없는 경우
             log.warn("Resume ID {} has no S3 fileKey.", resumeId);
         }
 
-        // 4. DTO로 변환하여 반환 (Builder 사용)
         return ResumeDetailDto.builder()
-                .title(resume.getTitle())
-                .fileKey(resume.getFileKey()) // 관리용 키
-                .createdAt(resume.getCreatedAt())
-                .updatedAt(resume.getUpdatedAt())
-                .pdfViewUrl(presignedUrl) // ✅ PDF를 볼 수 있는 URL
-                .build();
+            .title(resume.getTitle())
+            .fileKey(resume.getFileKey())
+            .createdAt(resume.getCreatedAt())
+            .updatedAt(resume.getUpdatedAt())
+            .pdfViewUrl(presignedUrl)
+            .build();
     }
 }
