@@ -41,16 +41,16 @@ public class S3Service {
         }
         try {
             GetObjectRequest getObjectRequest =
-                GetObjectRequest.builder().bucket(bucketName).key(fileKey).build();
+                    GetObjectRequest.builder().bucket(bucketName).key(fileKey).build();
 
             GetObjectPresignRequest getObjectPresignRequest =
-                GetObjectPresignRequest.builder()
-                    .signatureDuration(duration) // 외부에서 전달받은 유효 시간 설정
-                    .getObjectRequest(getObjectRequest)
-                    .build();
+                    GetObjectPresignRequest.builder()
+                            .signatureDuration(duration) // 외부에서 전달받은 유효 시간 설정
+                            .getObjectRequest(getObjectRequest)
+                            .build();
 
             PresignedGetObjectRequest presignedRequest =
-                s3Presigner.presignGetObject(getObjectPresignRequest);
+                    s3Presigner.presignGetObject(getObjectPresignRequest);
             return presignedRequest.url().toString();
         } catch (Exception e) {
             return null;
@@ -66,15 +66,15 @@ public class S3Service {
         String fileName = generateFileName(originalFileName);
 
         PutObjectRequest putObjectRequest =
-            PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .contentType(file.getContentType()) // 파일의 Content Type 설정
-                // .acl(ObjectCannedACL.PUBLIC_READ)
-                .build();
+                PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileName)
+                        .contentType(file.getContentType()) // 파일의 Content Type 설정
+                        // .acl(ObjectCannedACL.PUBLIC_READ)
+                        .build();
 
         RequestBody requestBody =
-            RequestBody.fromInputStream(file.getInputStream(), file.getSize());
+                RequestBody.fromInputStream(file.getInputStream(), file.getSize());
 
         s3Client.putObject(putObjectRequest, requestBody);
 
@@ -92,13 +92,13 @@ public class S3Service {
         String fileKey = generateFileName(desiredFileName); // 고유 키 생성
 
         PutObjectRequest putObjectRequest =
-            PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileKey)
-                .contentType("application/pdf") // Content Type을 PDF로 명시
-                .contentLength((long) fileBytes.length) // Content Length 설정
-                // .acl(ObjectCannedACL.PUBLIC_READ) // 동일하게 공개 읽기 권한 설정
-                .build();
+                PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileKey)
+                        .contentType("application/pdf") // Content Type을 PDF로 명시
+                        .contentLength((long) fileBytes.length) // Content Length 설정
+                        // .acl(ObjectCannedACL.PUBLIC_READ) // 동일하게 공개 읽기 권한 설정
+                        .build();
 
         // RequestBody 생성
         RequestBody requestBody = RequestBody.fromBytes(fileBytes);
@@ -138,11 +138,11 @@ public class S3Service {
         }
         try {
             GetObjectRequest getObjectRequest =
-                GetObjectRequest.builder().bucket(bucketName).key(fileKey).build();
+                    GetObjectRequest.builder().bucket(bucketName).key(fileKey).build();
 
             // getObjectAsBytes: 파일을 바이트 배열로 직접 다운로드
             ResponseBytes<GetObjectResponse> objectBytes =
-                s3Client.getObjectAsBytes(getObjectRequest);
+                    s3Client.getObjectAsBytes(getObjectRequest);
             return objectBytes.asByteArray();
         } catch (Exception e) {
             log.error("S3에서 파일 다운로드 실패. Key: {}, Error: {}", fileKey, e.getMessage(), e);

@@ -44,7 +44,7 @@ public class ResumePostDto {
         private String major;
         private String degree;
         private String status;
-        private LocalDate startDate; 
+        private LocalDate startDate;
         private LocalDate endDate;
         private Double gpa; // 내 학점 (예: 4.0)
         private Double maxGpa; // 최대 학점 (예: 4.5)
