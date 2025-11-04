@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${resume.resumeTitle} + ' - ' + ${user.name}">이력서</title>
+  <style>
+    /* PDF 변환을 위한 기본 스타일 */
+    @page {
+      size: A4;
+      margin: 1.5cm;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      font-size: 10pt;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* --- 레이아웃 --- */
+    .container {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 28pt;
+      margin: 0 0 5px 0;
+      color: #000;
+    }
+
+    header h2.resume-title {
+      font-size: 16pt;
+      font-weight: 500;
+      color: #555;
+      margin: 0;
+    }
+
+    header .contact-info {
+      font-size: 11pt;
+      margin-top: 15px;
+    }
+
+    .profile-section {
+      display: -webkit-box; /* Flexbox for wkhtmltopdf */
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-align: start;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .profile-section img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-right: 30px;
+      object-fit: cover;
+    }
+
+    .profile-section .introduction {
+      font-size: 11pt;
+      white-space: pre-wrap; /* 줄바꿈 유지 */
+      -webkit-box-flex: 1;
+      flex: 1;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section h2 {
+      font-size: 16pt;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    /* --- 항목 공통 스타일 --- */
+    .item {
+      margin-bottom: 20px;
+    }
+
+    /* ✅ 수정: justify-content 제거 */
+    .item-header {
+      display: -webkit-box;
+      display: flex;
+      -webkit-box-pack: justify;
+      /* justify-content: space-between; */ /* 경고 발생 속성 제거 */
+      margin-bottom: 5px;
+    }
+
+    .item-header h3 {
+      font-size: 14pt;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .item-header h3 .sub-text {
+      font-size: 12pt;
+      font-weight: 500;
+      color: #555;
+      margin-left: 10px;
+    }
+
+    /* ✅ 수정: margin-left: auto 추가 */
+    .date-range {
+      font-size: 10pt;
+      font-weight: 500;
+      color: #777;
+      -webkit-box-flex: 0;
+      flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
+      padding-left: 20px;
+      margin-left: auto; /* ✅ 오른쪽 끝으로 밀기 */
+    }
+
+    .item .description {
+      font-size: 10pt;
+      white-space: pre-wrap; /* 줄바꿈 및 공백 유지 */
+      margin-top: 8px;
+      padding-left: 15px;
+    }
+
+    /* --- 기술 스택 --- */
+    /* ✅ 수정: gap 제거, margin: -4px 추가 */
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      /* gap: 8px; */ /* 경고 발생 속성 제거 */
+      margin: -4px; /* 태그의 margin을 상쇄하기 위함 */
+    }
+
+    /* ✅ 수정: margin: 4px 추가 */
+    .skill-tag {
+      background-color: #eef1f5;
+      color: #333;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 10pt;
+      font-weight: 500;
+      margin: 4px; /* ✅ gap 대신 margin 사용 */
+    }
+
+    /* --- 프로젝트 URL --- */
+    .project-url {
+      margin-top: 5px;
+      padding-left: 15px;
+    }
+    .project-url a {
+      color: #0066cc;
+      text-decoration: none;
+      font-size: 10pt;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1 th:text="${user.name}">홍길동</h1>
+    <h2 class="resume-title" th:text="${resume.resumeTitle}">[이력서 제목]</h2>
+    <div class="contact-info">
+      <span th:text="${user.email}">[user.email]</span> |
+      <span th:text="${user.phoneNumber}">[user.phoneNumber]</span>
+    </div>
+  </header>
+
+  <div class="profile-section">
+    <img th:if="${photoBase64}"
+         th:src="'data:image/jpeg;base64,' + ${photoBase64}"
+         alt="프로필 사진">
+    <div class="introduction" th:text="${resume.introduction}">
+      [간단한 자기소개 내용이 여기에 들어갑니다. 사용자의 강점과 경험을 요약합니다.]
+    </div>
+  </div>
+
+  <section class="section skills-section">
+    <h2>기술 스택</h2>
+    <div class="skills-container">
+                <span th:each="skill : ${resume.skills}" th:text="${skill}" class="skill-tag">
+                    Java
+                </span>
+    </div>
+  </section>
+
+  <section class="section experience-section">
+    <h2>경력 사항</h2>
+    <div class="item" th:each="exp : ${resume.experience}">
+      <div class="item-header">
+        <h3>
+          <span th:text="${exp.companyName}">[회사명]</span>
+          <span class="sub-text" th:text="${exp.position}">[직무]</span>
+        </h3>
+        <span class="date-range">
+                        <span th:text="${#temporals.format(exp.startDate, 'yyyy.MM')}">[2021.03]</span>
+                        -
+                        <span th:text="${exp.endDate != null ? #temporals.format(exp.endDate, 'yyyy.MM') : '재직 중'}">[2023.03]</span>
+                    </span>
+      </div>
+      <div class="description" th:text="${exp.description}">
+        [주요 업무 및 성과 내용]
+      </div>
+    </div>
+  </section>
+
+  <section class="section projects-section">
+    <h2>프로젝트</h2>
+    <div class="item" th:each="proj : ${resume.projects}">
+      <div class="item-header">
+        <h3>
+          <span th:text="${proj.projectName}">[프로젝트명]</span>
+        </h3>
+        <span class="date-range">
+                        <span th:text="${#temporals.format(proj.startDate, 'yyyy.MM')}">[2021.03]</span>
+                        -
+                        <span th:text="${#temporals.format(proj.endDate, 'yyyy.MM')}">[2023.03]</span>
+                    </span>
+      </div>
+      <div class="description" th:text="${proj.description}">
+        [프로젝트 상세 설명]
+      </div>
+      <div class="project-url" th:if="${proj.projectUrl}">
+        <a th:href="${proj.projectUrl}" th:text="${proj.projectUrl}" target="_blank">[프로젝트 URL]</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section education-section">
+    <h2>학력 사항</h2>
+    <div class="item" th:each="edu : ${resume.education}">
+      <div class="item-header">
+        <h3>
+          <span th:text="${edu.schoolName}">[학교명]</span>
+          <span class="sub-text" th:text="${edu.major}">[전공명]</span>
+        </h3>
+        <span class="date-range">
+                        <span th:text="${#temporals.format(edu.startDate, 'yyyy.MM')}">[2021.03]</span>
+                        -
+                        <span th:text="${#temporals.format(edu.endDate, 'yyyy.MM')}">[2023.03]</span>
+                    </span>
+      </div>
+      <div style="padding-left: 15px;">
+        <span th:text="${edu.degree}">[학위]</span>
+        <span th:text="' (' + ${edu.status} + ')'">[재학/졸업/수료]</span>
+        <span th:if="${edu.gpa != null and edu.maxGpa != null}"
+              th:text="' (학점: ' + ${edu.gpa} + ' / ' + ${edu.maxGpa} + ')'"
+              style="font-weight: bold; color: #555; margin-left: 10px;">
+            (학점: 4.0 / 4.5)
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section certificates-section">
+    <h2>자격증</h2>
+    <div class="item" th:each="cert : ${resume.certificates}">
+      <div class="item-header">
+        <h3>
+          <span th:text="${cert.certificateName}">[자격증명]</span>
+        </h3>
+        <span class="date-range">
+                        <span th:text="${#temporals.format(cert.acquisitionDate, 'yyyy.MM.dd')}">[취득일]</span>
+                    </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section awards-section">
+    <h2>수상 및 활동</h2>
+    <div class="item" th:each="award : ${resume.awardsActivities}">
+      <div class="item-header">
+        <h3>
+          <span th:text="${award.activityName}">[활동명]</span>
+          <span class="sub-text" th:text="${award.organization}">[주관 기관]</span>
+        </h3>
+        <span class="date-range">
+                        <span th:text="${#temporals.format(award.date, 'yyyy.MM.dd')}">[활동 날짜]</span>
+                    </span>
+      </div>
+      <div class="description" th:text="${award.description}">
+        [상세 활동 내용]
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
