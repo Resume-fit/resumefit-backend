@@ -4,6 +4,7 @@ import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionDetailD
 import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionSummaryDto;
 import com.resumefit.resumefit_backend.domain.jobposition.service.JobPositionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name="채공공고 조회 api", description = "채용공고 조회와 관련된 API들입니다.")
 @RequestMapping("/api/job-positions")
 public class JobPositionController {
 

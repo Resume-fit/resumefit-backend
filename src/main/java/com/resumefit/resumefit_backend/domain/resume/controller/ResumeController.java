@@ -7,6 +7,7 @@ import com.resumefit.resumefit_backend.domain.resume.service.ResumeService;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name=" 이력서 api", description = "이력서와 관련된 API들입니다.")
 @RequestMapping("/api/resumes")
 public class ResumeController {
 
