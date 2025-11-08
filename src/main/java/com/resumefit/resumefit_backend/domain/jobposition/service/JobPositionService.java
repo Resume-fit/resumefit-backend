@@ -7,9 +7,12 @@ import com.resumefit.resumefit_backend.domain.jobposition.mapper.JobPositionMapp
 import com.resumefit.resumefit_backend.domain.jobposition.repository.JobPositionRepository;
 import com.resumefit.resumefit_backend.exception.CustomException;
 import com.resumefit.resumefit_backend.exception.ErrorCode;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +31,10 @@ public class JobPositionService {
     }
 
     public JobPositionDetailDto getJobPosition(Long id) {
-        JobPosition jobPosition = jobPositionRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.JOB_POSITION_NOT_FOUND));
+        JobPosition jobPosition =
+                jobPositionRepository
+                        .findById(id)
+                        .orElseThrow(() -> new CustomException(ErrorCode.JOB_POSITION_NOT_FOUND));
         return jobPositionMapper.toJobPositionDetailDto(jobPosition);
-
     }
 }

@@ -58,8 +58,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (auth) ->
-                        auth
-                                .requestMatchers(
+                        auth.requestMatchers(
                                         "/",
                                         "/index.html",
                                         "/api/join",

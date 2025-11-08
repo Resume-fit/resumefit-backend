@@ -1,11 +1,12 @@
 package com.resumefit.resumefit_backend.domain.jobposition.dto;
 
-import com.resumefit.resumefit_backend.domain.jobposition.entity.Requirement;
 import com.resumefit.resumefit_backend.domain.jobposition.entity.SkillType;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 public class JobPositionDetailDto {
@@ -28,5 +29,4 @@ public class JobPositionDetailDto {
         private SkillType type; // REQUIRED 또는 PREFERRED
         private String content; // "Spring Boot 2년 이상 경험자" 등
     }
-
 }
