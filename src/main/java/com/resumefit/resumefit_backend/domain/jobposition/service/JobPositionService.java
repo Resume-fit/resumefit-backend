@@ -1,9 +1,12 @@
 package com.resumefit.resumefit_backend.domain.jobposition.service;
 
+import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionDetailDto;
 import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionSummaryDto;
 import com.resumefit.resumefit_backend.domain.jobposition.entity.JobPosition;
 import com.resumefit.resumefit_backend.domain.jobposition.mapper.JobPositionMapper;
 import com.resumefit.resumefit_backend.domain.jobposition.repository.JobPositionRepository;
+import com.resumefit.resumefit_backend.exception.CustomException;
+import com.resumefit.resumefit_backend.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,5 +25,12 @@ public class JobPositionService {
     public List<JobPositionSummaryDto> getAllJobPositionsByCategory(String category) {
         List<JobPosition> jobPositions = jobPositionRepository.findByJobCategory(category);
         return jobPositionMapper.toJobPositionSummaryDtoList(jobPositions);
+    }
+
+    public JobPositionDetailDto getJobPosition(Long id) {
+        JobPosition jobPosition = jobPositionRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.JOB_POSITION_NOT_FOUND));
+        return jobPositionMapper.toJobPositionDetailDto(jobPosition);
+
     }
 }

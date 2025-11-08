@@ -1,5 +1,6 @@
 package com.resumefit.resumefit_backend.domain.jobposition.controller;
 
+import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionDetailDto;
 import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionSummaryDto;
 import com.resumefit.resumefit_backend.domain.jobposition.service.JobPositionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,10 +26,17 @@ public class JobPositionController {
     }
 
     @Operation(summary = "직무별 채용공고 조회", description = "직무명을 통해 채용공고를 조회합니다.")
-    @GetMapping("/{category}")
+    @GetMapping("/category/{category}")
     public ResponseEntity<List<JobPositionSummaryDto>> getAllJobPositionsByCategory(
         @PathVariable("category") String category) {
         return ResponseEntity.ok(jobPositionService.getAllJobPositionsByCategory(category));
+    }
+
+    @Operation(summary = "특정 채용공고 조회", description = "채용공고 id를 통해 채용공고를 조회합니다.")
+    @GetMapping("/{id}")
+    public ResponseEntity<JobPositionDetailDto> getJobPosition(
+        @PathVariable("id") Long id) {
+        return ResponseEntity.ok(jobPositionService.getJobPosition(id));
     }
 
 }
