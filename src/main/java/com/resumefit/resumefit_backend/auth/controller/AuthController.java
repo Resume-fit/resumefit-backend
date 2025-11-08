@@ -6,6 +6,7 @@ import com.resumefit.resumefit_backend.auth.service.RefreshTokenService;
 import com.resumefit.resumefit_backend.auth.util.JWTUtil;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ import java.util.Iterator;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name="로그인 api", description = "로그인과 관련된 API들입니다.")
+@Tag(name = "로그인 api", description = "로그인과 관련된 API들입니다.")
 @RequiredArgsConstructor
 public class AuthController {
 

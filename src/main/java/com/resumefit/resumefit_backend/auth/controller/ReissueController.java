@@ -6,6 +6,7 @@ import com.resumefit.resumefit_backend.auth.service.RefreshTokenService;
 import com.resumefit.resumefit_backend.auth.util.JWTUtil;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name="토근 재발급 api", description = "토근 재발급과 관련된 API들입니다.")
+@Tag(name = "토근 재발급 api", description = "토근 재발급과 관련된 API들입니다.")
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
