@@ -11,5 +11,4 @@ public class JobPositionSummaryDto {
     private String workPlace;
     private String employmentType;
     private String url;
-
 }
