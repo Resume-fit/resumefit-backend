@@ -5,6 +5,8 @@ import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
 import com.resumefit.resumefit_backend.domain.user.dto.UserInfoDto;
 import com.resumefit.resumefit_backend.domain.user.service.UserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = " 유저 api", description = "유저와 관련된 API들입니다.")
 @RequiredArgsConstructor
 public class UserController {
 

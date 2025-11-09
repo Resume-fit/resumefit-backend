@@ -46,7 +46,6 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // 스웨거 경로들은 Spring Security 필터 체인을 완전히 거치지 않도록 설정합니다.
         return (web) -> web.ignoring().requestMatchers(SWAGGER_PATHS);
     }
 
@@ -59,14 +58,13 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (auth) ->
-                        auth
-                                // 테스트용으로 어드민 경로도 열어놓음
-                                .requestMatchers(
+                        auth.requestMatchers(
                                         "/",
                                         "/index.html",
                                         "/api/join",
                                         "/api/auth/login",
                                         "/api/reissue",
+                                        "/api/job-positions/**",
                                         "/api/admin/**")
                                 .permitAll()
                                 // .requestMatchers("/api/join", "/api/auth/login",

@@ -22,18 +22,16 @@ public class S3Config {
     private String region;
 
     @Bean
-    public S3Client s3Client() { // Renamed method to convention
-        // 1. Use AwsBasicCredentials for SDK v2
+    public S3Client s3Client() {
+
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
-        // 2. Use StaticCredentialsProvider for SDK v2
         StaticCredentialsProvider credentialsProvider =
                 StaticCredentialsProvider.create(credentials);
 
-        // 3. Build S3Client using the SDK v2 builder pattern
         return S3Client.builder()
-                .region(Region.of(region)) // Use Region.of() for SDK v2
-                .credentialsProvider(credentialsProvider) // Set credentials provider
+                .region(Region.of(region))
+                .credentialsProvider(credentialsProvider)
                 .build();
     }
 

@@ -4,6 +4,8 @@ import com.resumefit.resumefit_backend.domain.resume.service.S3Service;
 import com.resumefit.resumefit_backend.domain.user.dto.JoinRequestDto;
 import com.resumefit.resumefit_backend.domain.user.service.JoinService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "회원가입 api", description = "회원가입과 관련된 API들입니다.")
 @RequiredArgsConstructor
 public class JoinController {
 

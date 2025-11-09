@@ -6,6 +6,9 @@ import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
 import com.resumefit.resumefit_backend.domain.resume.service.ResumeService;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -22,11 +25,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = " 이력서 api", description = "이력서와 관련된 API들입니다.")
 @RequestMapping("/api/resumes")
 public class ResumeController {
 
     private final ResumeService resumeService;
 
+    @Operation(summary = "이력서 저장", description = "사용자의 이력서를 저장합니다.")
     @PostMapping
     public ResponseEntity<Void> saveResume(
             @RequestBody ResumePostDto resumePostDto,
@@ -35,12 +40,14 @@ public class ResumeController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "모든 이력서 조회", description = "사용자의 모든 이력서를 조회합니다.")
     @GetMapping
     ResponseEntity<List<ResumeSummaryDto>> getAllMyResume(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(resumeService.getAllMyResume(userDetails));
     }
 
+    @Operation(summary = "이력서 상세 조회", description = "이력서 ID를 통해 특정 이력서를 조회합니다.")
     @GetMapping("/{resumeId}") // 예시: GET /api/resumes/{resumeId}
     public ResponseEntity<ResumeDetailDto> getResumeById(
             @PathVariable("resumeId") Long resumeId,
@@ -48,6 +55,7 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getResume(resumeId, userDetails));
     }
 
+    @Operation(summary = "이력서 삭제", description = "이력서 ID를 통해 특정 이력서를 삭제합니다.")
     @DeleteMapping("/{resumeId}")
     ResponseEntity<Void> deleteResume(
             @AuthenticationPrincipal CustomUserDetails userDetails,

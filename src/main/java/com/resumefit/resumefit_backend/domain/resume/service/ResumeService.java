@@ -53,28 +53,11 @@ public class ResumeService {
                         .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String photoBase64 = null;
-        //        if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
-        //            byte[] photoBytes = s3Service.downloadFileAsBytes(user.getPhotoKey());
-        //            if (photoBytes != null) {
-        //                photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
-        //            }
-        //        }
-        log.info("PDF 생성 시작 - User: {}", user.getEmail());
-
         if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
-            log.info("발견된 Photo Key: {}", user.getPhotoKey());
-
             byte[] photoBytes = s3Service.downloadFileAsBytes(user.getPhotoKey());
-
-            if (photoBytes != null && photoBytes.length > 0) {
-                log.info("S3에서 이미지 다운로드 성공, Bytes: {}", photoBytes.length);
+            if (photoBytes != null) {
                 photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
-                log.info("Base64 인코딩 완료 (앞 20자): {}", photoBase64.substring(0, 20));
-            } else {
-                log.warn("S3에서 파일을 다운로드했으나 비어있거나 null입니다. Key: {}", user.getPhotoKey());
             }
-        } else {
-            log.warn("User 엔티티에 photoKey가 없습니다. 프로필 사진을 건너뜁니다.");
         }
 
         String htmlContent =
