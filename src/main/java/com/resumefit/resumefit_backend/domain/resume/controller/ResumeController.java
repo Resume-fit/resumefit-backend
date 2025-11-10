@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,12 +38,22 @@ public class ResumeController {
     private final ResumeService resumeService;
     private final ReviewService reviewService;
 
-    @Operation(summary = "이력서 저장", description = "사용자의 이력서를 저장합니다.")
+    @Operation(summary = "이력서 작성 및 저장", description = "사용자가 이력서를 작성 및 저장합니다.")
     @PostMapping
     public ResponseEntity<Void> saveResume(
             @RequestBody ResumePostDto resumePostDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         resumeService.processResumePost(resumePostDto, userDetails);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "이력서 파일 업로드", description = "PDF 형식의 이력서를 업로드합니다.")
+    @PostMapping("/upload")
+    public ResponseEntity<Void> uploadResumeFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("title") String title,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        resumeService.uploadResumeFile(file, title, userDetails);
         return ResponseEntity.ok().build();
     }
 

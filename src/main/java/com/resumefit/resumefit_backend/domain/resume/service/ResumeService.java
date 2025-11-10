@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -44,6 +46,7 @@ public class ResumeService {
     private final HtmlGenerationService htmlGenerationService;
     private final ResumeMapper resumeMapper;
 
+    @Transactional
     public void processResumePost(ResumePostDto resumePostDto, CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 
@@ -116,6 +119,7 @@ public class ResumeService {
         return PDFInfoDto.builder().fileUrl(s3Service.getFileUrl(fileKey)).fileKey(fileKey).build();
     }
 
+    @Transactional(readOnly = true)
     public List<ResumeSummaryDto> getAllMyResume(CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
 
@@ -185,5 +189,50 @@ public class ResumeService {
                 .updatedAt(resume.getUpdatedAt())
                 .pdfViewUrl(presignedUrl)
                 .build();
+    }
+
+    @Transactional
+    public void uploadResumeFile(MultipartFile file, String title, CustomUserDetails userDetails) {
+
+        Long userId = userDetails.getId();
+
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if (file.isEmpty() || !Objects.equals(file.getContentType(), "application/pdf")) {
+            throw new CustomException(ErrorCode.NOT_A_PDF_FILE);
+        }
+
+        String fileKey;
+        try {
+            fileKey = s3Service.uploadFile(file);
+        } catch (IOException e) {
+            log.error("S3 파일 업로드 실패 (IOException): {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
+        } catch (Exception e) {
+            log.error("S3 파일 업로드 실패 (Exception): {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
+        }
+
+        // PDFInfoDto 생성
+        PDFInfoDto pdfInfoDto =
+                PDFInfoDto.builder()
+                        .fileUrl(s3Service.getFileUrl(fileKey))
+                        .fileKey(fileKey)
+                        .build();
+
+        Resume resume =
+                Resume.builder()
+                        .user(user)
+                        .title(title)
+                        .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
+                        .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build();
+
+        resumeRepository.save(resume);
     }
 }

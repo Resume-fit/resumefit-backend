@@ -9,6 +9,7 @@ public enum ErrorCode {
 
     // 400 Bad Request: 잘못된 요청
     NOT_A_NEWS_ARTICLE(HttpStatus.BAD_REQUEST, "제공된 URL은 뉴스 기사가 아닙니다."),
+    NOT_A_PDF_FILE(HttpStatus.BAD_REQUEST, "업로드된 파일이 PDF 형식이 아닙니다."),
 
     // 401 Unauthorized: 인증되지 않은 사용자
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요한 요청입니다."),
