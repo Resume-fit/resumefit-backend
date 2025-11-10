@@ -2,6 +2,7 @@ package com.resumefit.resumefit_backend.domain.review.entity;
 
 import com.resumefit.resumefit_backend.domain.matching.enums.ReviewType;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,13 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -46,5 +50,4 @@ public class Review {
 
     @Column(columnDefinition = "TEXT") // 매칭된 공고 ID 직렬화
     private String recommendedJobPositionIds;
-
 }

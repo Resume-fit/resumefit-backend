@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -71,12 +72,10 @@ public class ResumeController {
     @Operation(summary = "이력서 후기 제출", description = "특정 매칭에 대한 후기를 제출합니다.")
     @DeleteMapping("/{resumeId}/review")
     ResponseEntity<Void> submitReview(
-        @PathVariable("resumeId") Long resumeId,
-        @Valid @RequestBody ReviewRequestDto reviewRequestDto,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable("resumeId") Long resumeId,
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         reviewService.submitReview(resumeId, reviewRequestDto, userDetails);
         return ResponseEntity.ok().build();
     }
-
-
 }
