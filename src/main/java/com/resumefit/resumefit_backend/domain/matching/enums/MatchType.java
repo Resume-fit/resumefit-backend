@@ -1,4 +1,4 @@
-package com.resumefit.resumefit_backend.domain.jobposition.entity.matching;
+package com.resumefit.resumefit_backend.domain.matching.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
