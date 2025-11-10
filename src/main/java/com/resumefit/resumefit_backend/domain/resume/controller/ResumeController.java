@@ -5,12 +5,10 @@ import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
 import com.resumefit.resumefit_backend.domain.resume.service.ResumeService;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,12 +29,22 @@ public class ResumeController {
 
     private final ResumeService resumeService;
 
-    @Operation(summary = "이력서 저장", description = "사용자의 이력서를 저장합니다.")
+    @Operation(summary = "이력서 작성 및 저장", description = "사용자가 이력서를 작성 및 저장합니다.")
     @PostMapping
     public ResponseEntity<Void> saveResume(
             @RequestBody ResumePostDto resumePostDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         resumeService.processResumePost(resumePostDto, userDetails);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "이력서 파일 업로드", description = "PDF 형식의 이력서를 업로드합니다.")
+    @PostMapping("/upload")
+    public ResponseEntity<Void> uploadResumeFile(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("title") String title,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        resumeService.uploadResumeFile(file, title, userDetails);
         return ResponseEntity.ok().build();
     }
 
