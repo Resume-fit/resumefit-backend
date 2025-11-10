@@ -5,10 +5,12 @@ import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
 import com.resumefit.resumefit_backend.domain.resume.service.ResumeService;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,9 +45,9 @@ public class ResumeController {
     @Operation(summary = "이력서 파일 업로드", description = "PDF 형식의 이력서를 업로드합니다.")
     @PostMapping("/upload")
     public ResponseEntity<Void> uploadResumeFile(
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("title") String title,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("title") String title,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         resumeService.uploadResumeFile(file, title, userDetails);
         return ResponseEntity.ok().build();
     }
