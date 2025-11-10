@@ -4,10 +4,14 @@ import com.resumefit.resumefit_backend.domain.resume.dto.ResumeDetailDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
 import com.resumefit.resumefit_backend.domain.resume.service.ResumeService;
+import com.resumefit.resumefit_backend.domain.review.dto.ReviewRequestDto;
+import com.resumefit.resumefit_backend.domain.review.service.ReviewService;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +34,7 @@ import java.util.List;
 public class ResumeController {
 
     private final ResumeService resumeService;
+    private final ReviewService reviewService;
 
     @Operation(summary = "이력서 저장", description = "사용자의 이력서를 저장합니다.")
     @PostMapping
@@ -61,6 +66,16 @@ public class ResumeController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable("resumeId") Long resumeId) {
         resumeService.deleteResume(resumeId, userDetails);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "이력서 후기 제출", description = "특정 매칭에 대한 후기를 제출합니다.")
+    @DeleteMapping("/{resumeId}/review")
+    ResponseEntity<Void> submitReview(
+            @PathVariable("resumeId") Long resumeId,
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        reviewService.submitReview(resumeId, reviewRequestDto, userDetails);
         return ResponseEntity.ok().build();
     }
 }

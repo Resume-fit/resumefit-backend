@@ -1,6 +1,7 @@
-package com.resumefit.resumefit_backend.domain.jobposition.entity.matching;
+package com.resumefit.resumefit_backend.domain.matching.entity;
 
 import com.resumefit.resumefit_backend.domain.jobposition.entity.JobPosition;
+import com.resumefit.resumefit_backend.domain.matching.enums.MatchType;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
 
 import jakarta.persistence.Column;
