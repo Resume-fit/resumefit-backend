@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -31,6 +30,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -98,9 +98,10 @@ public class ResumeController {
     @Operation(summary = "이력서 매칭", description = "특정 이력서를 채용공고들과 매칭합니다.")
     @PostMapping("/{resumeId}/match")
     ResponseEntity<List<MatchingResponseDto>> matchResume(
-        @PathVariable("resumeId") Long resumeId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<MatchingResponseDto> matchingResponseDtoList = resumeService.matchResume(resumeId, userDetails);
+            @PathVariable("resumeId") Long resumeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<MatchingResponseDto> matchingResponseDtoList =
+                resumeService.matchResume(resumeId, userDetails);
         return ResponseEntity.ok(matchingResponseDtoList);
     }
 
@@ -117,5 +118,4 @@ public class ResumeController {
             return ResponseEntity.status(503).body(healthStatus);
         }
     }
-
 }

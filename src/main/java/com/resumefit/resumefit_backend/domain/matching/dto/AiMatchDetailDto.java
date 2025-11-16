@@ -2,6 +2,7 @@ package com.resumefit.resumefit_backend.domain.matching.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.resumefit.resumefit_backend.domain.matching.enums.MatchType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

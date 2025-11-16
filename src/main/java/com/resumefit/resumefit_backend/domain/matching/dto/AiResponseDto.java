@@ -1,10 +1,12 @@
 package com.resumefit.resumefit_backend.domain.matching.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 @Data
 @NoArgsConstructor

@@ -1,6 +1,5 @@
 package com.resumefit.resumefit_backend.config;
 
-import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,17 +18,18 @@ public class RestClientConfig {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
 
         factory.setConnectTimeout(5000); // 5초
-        factory.setReadTimeout(300000);   // 5분
+        factory.setReadTimeout(300000); // 5분
 
         return factory;
     }
 
     @Bean
-    public RestClient fastApiRestClient(SimpleClientHttpRequestFactory factory) { // 3. 생성된 팩토리를 주입받음
+    public RestClient fastApiRestClient(
+            SimpleClientHttpRequestFactory factory) { // 3. 생성된 팩토리를 주입받음
         return RestClient.builder()
-            .baseUrl(fastApiBaseUrl)
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .requestFactory(factory)
-            .build();
+                .baseUrl(fastApiBaseUrl)
+                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .requestFactory(factory)
+                .build();
     }
 }

@@ -2,9 +2,10 @@ package com.resumefit.resumefit_backend.domain.matching.repository;
 
 import com.resumefit.resumefit_backend.domain.matching.entity.Matching;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
-import java.util.Arrays;
-import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
