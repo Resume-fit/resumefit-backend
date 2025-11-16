@@ -6,6 +6,14 @@ import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.font.FontProgram;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.layout.font.FontProvider;
+import com.resumefit.resumefit_backend.domain.jobposition.dto.JobPositionSummaryDto;
+import com.resumefit.resumefit_backend.domain.jobposition.entity.JobPosition;
+import com.resumefit.resumefit_backend.domain.jobposition.mapper.JobPositionMapper;
+import com.resumefit.resumefit_backend.domain.jobposition.repository.JobPositionRepository;
+import com.resumefit.resumefit_backend.domain.matching.dto.AiMatchDetailDto;
+import com.resumefit.resumefit_backend.domain.matching.entity.Matching;
+import com.resumefit.resumefit_backend.domain.matching.repository.MatchingRepository;
+import com.resumefit.resumefit_backend.domain.resume.dto.MatchingResponseDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.PDFInfoDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeDetailDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
@@ -18,22 +26,25 @@ import com.resumefit.resumefit_backend.domain.user.entity.User;
 import com.resumefit.resumefit_backend.domain.user.repository.UserRepository;
 import com.resumefit.resumefit_backend.exception.CustomException;
 import com.resumefit.resumefit_backend.exception.ErrorCode;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -45,6 +56,10 @@ public class ResumeService {
     private final S3Service s3Service;
     private final HtmlGenerationService htmlGenerationService;
     private final ResumeMapper resumeMapper;
+    private final MatchingRepository matchingRepository;
+    private final JobPositionRepository jobPositionRepository;
+    private final RestClient fastApiRestClient;
+    private final JobPositionMapper jobPositionMapper;
 
     @Transactional
     public void processResumePost(ResumePostDto resumePostDto, CustomUserDetails userDetails) {
@@ -234,5 +249,114 @@ public class ResumeService {
                         .build();
 
         resumeRepository.save(resume);
+    }
+
+    @Transactional
+    public List<MatchingResponseDto> matchResume(Long resumeId, CustomUserDetails userDetails) {
+
+        Resume resume = resumeRepository.findById(resumeId)
+            .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+
+        if (!resume.getUser().getId().equals(userDetails.getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
+        String fileKey = resume.getFileKey();
+        if (fileKey == null || fileKey.isBlank()) {
+            throw new CustomException(ErrorCode.FILE_NOT_FOUND);
+        }
+
+        String s3UrlForFastApi = s3Service.generatePresignedUrl(fileKey, Duration.ofMinutes(2));
+
+        log.info("FastAPI 매칭 요청 시작. Resume ID: {}, S3 URL: {}", resumeId, s3UrlForFastApi);
+
+        try {
+            Map<String, String> requestBody = Map.of("full_path", s3UrlForFastApi);
+
+            Map<String, List<AiMatchDetailDto>> aiResponse = fastApiRestClient.post()
+                .uri("/api/ocr")
+                .body(requestBody)
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, List<AiMatchDetailDto>>>() {});
+
+            log.info("Deleting old matches for Resume ID: {}", resumeId);
+            matchingRepository.deleteByResume(resume);
+
+            List<Matching> newMatches = new ArrayList<>();
+
+            // "SUITABLE" 목록 처리
+            assert aiResponse != null;
+            if (aiResponse.containsKey("SUITABLE")) {
+                for (AiMatchDetailDto dto : aiResponse.get("SUITABLE")) {
+                    newMatches.add(createMatchingEntity(resume, dto));
+                }
+            }
+
+            // "GROWTH_TRACK" 목록 처리
+            if (aiResponse.containsKey("GROWTH_TRACK")) {
+                for (AiMatchDetailDto dto : aiResponse.get("GROWTH_TRACK")) {
+                    newMatches.add(createMatchingEntity(resume, dto));
+                }
+            }
+
+            List<Matching> savedMatches = matchingRepository.saveAll(
+                newMatches.stream().filter(Objects::nonNull).collect(Collectors.toList())
+            );
+            log.info("Saved {} new matches for Resume ID: {}", savedMatches.size(), resumeId);
+
+            return savedMatches.stream()
+                .map(match -> {
+                    JobPosition job = match.getJobPosition();
+
+                    JobPositionSummaryDto summaryDto = jobPositionMapper.toJobPositionSummaryDto(job);
+
+                    return new MatchingResponseDto(
+                        summaryDto,
+                        match.getMatchType().name(), // Enum -> String
+                        match.getComment()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("FastAPI 매칭 호출 또는 저장 실패. Resume ID: {}. Error: {}", resumeId, e.getMessage(), e);
+            throw new CustomException(ErrorCode.EXTERNAL_API_CALL_FAILED);
+        }
+    }
+
+    private Matching createMatchingEntity(Resume resume, AiMatchDetailDto dto) {
+        // DTO의 jobPositionId로 실제 JobPosition 엔티티 조회
+        JobPosition jobPosition = jobPositionRepository.findById(dto.getJobPositionId())
+            .orElse(null); // ID가 없으면 null
+
+        if (jobPosition == null) {
+            log.warn("Matching result returned non-existent JobPosition ID: {}", dto.getJobPositionId());
+            return null; // 존재하지 않는 공고 ID는 건너뜀
+        }
+
+        return Matching.builder()
+            .resume(resume)
+            .jobPosition(jobPosition)
+            .matchType(dto.getMatchType()) // DTO에서 이미 Enum으로 변환됨
+            .comment(dto.getComment())
+            .build();
+    }
+
+    public Map<String, String> checkFastApiHealth() {
+        try {
+            fastApiRestClient.get()
+                .uri("/")
+                .retrieve()
+                .toBodilessEntity(); // 응답 코드가 2xx인지 확인
+
+            // 성공 시
+            log.info("FastAPI health check successful.");
+            return Map.of("status", "UP", "message", "FastAPI is responding.");
+
+        } catch (RestClientException e) {
+            // 연결 실패, 5xx 에러 등 모든 RestClient 예외
+            log.error("FastAPI health check failed: {}", e.getMessage());
+            return Map.of("status", "DOWN", "message", e.getMessage());
+        }
     }
 }

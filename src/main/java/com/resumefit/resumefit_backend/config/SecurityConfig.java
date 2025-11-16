@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     private static final String[] SWAGGER_PATHS = {
-        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api/auth/login"
+        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/api/auth/login", "/api/resumes/health-check"
     };
 
     // AuthenticationManager Bean 등록

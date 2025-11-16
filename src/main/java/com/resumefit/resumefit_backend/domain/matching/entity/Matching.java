@@ -46,4 +46,7 @@ public class Matching {
     @Enumerated(EnumType.STRING) // DB에 Enum 이름을 문자열로 저장 (예: "SUITABLE")
     @Column(name = "match_type", nullable = false)
     private MatchType matchType;
+
+    @Column(columnDefinition = "TEXT")
+    private String comment;
 }
