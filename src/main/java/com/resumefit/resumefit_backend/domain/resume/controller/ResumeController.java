@@ -1,5 +1,6 @@
 package com.resumefit.resumefit_backend.domain.resume.controller;
 
+import com.resumefit.resumefit_backend.domain.resume.dto.MatchingResponseDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeDetailDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumePostDto;
 import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +40,7 @@ public class ResumeController {
 
     private final ResumeService resumeService;
     private final ReviewService reviewService;
+    private final RestClient fastApiRestClient;
 
     @Operation(summary = "이력서 작성 및 저장", description = "사용자가 이력서를 작성 및 저장합니다.")
     @PostMapping
@@ -89,5 +93,29 @@ public class ResumeController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         reviewService.submitReview(resumeId, reviewRequestDto, userDetails);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "이력서 매칭", description = "특정 이력서를 채용공고들과 매칭합니다.")
+    @PostMapping("/{resumeId}/match")
+    ResponseEntity<List<MatchingResponseDto>> matchResume(
+            @PathVariable("resumeId") Long resumeId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<MatchingResponseDto> matchingResponseDtoList =
+                resumeService.matchResume(resumeId, userDetails);
+        return ResponseEntity.ok(matchingResponseDtoList);
+    }
+
+    @Operation(summary = "FastAPI 서버 헬스 체크", description = "FastAPI 서버의 루트 엔드포인트를 호출하여 응답을 확인합니다.")
+    @GetMapping("/health-check")
+    public ResponseEntity<Map<String, String>> checkFastApi() {
+        Map<String, String> healthStatus = resumeService.checkFastApiHealth();
+
+        if ("UP".equals(healthStatus.get("status"))) {
+            // 성공 시 200 OK
+            return ResponseEntity.ok(healthStatus);
+        } else {
+            // 실패 시 503 Service Unavailable
+            return ResponseEntity.status(503).body(healthStatus);
+        }
     }
 }
