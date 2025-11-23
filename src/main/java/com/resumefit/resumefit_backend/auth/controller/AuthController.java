@@ -5,6 +5,13 @@ import com.resumefit.resumefit_backend.auth.dto.LoginResponseDto;
 import com.resumefit.resumefit_backend.auth.service.RefreshTokenService;
 import com.resumefit.resumefit_backend.auth.util.JWTUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.http.Cookie;
@@ -28,7 +35,7 @@ import java.util.Iterator;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "로그인 api", description = "로그인과 관련된 API들입니다.")
+@Tag(name = "인증", description = "로그인, 로그아웃 등 인증 관련 API")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -36,6 +43,31 @@ public class AuthController {
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
 
+    @Operation(
+            summary = "로그인",
+            description =
+                    """
+                    이메일과 비밀번호로 로그인합니다.
+
+                    - 성공 시 Access Token을 응답 본문에, Refresh Token을 HttpOnly 쿠키에 담아 반환합니다.
+                    - Access Token 유효기간: 1시간
+                    - Refresh Token 유효기간: 24시간 (쿠키)
+                    """)
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "200",
+                description = "로그인 성공",
+                content = @Content(schema = @Schema(implementation = LoginResponseDto.class))),
+        @ApiResponse(
+                responseCode = "401",
+                description = "인증 실패 - 이메일 또는 비밀번호 불일치",
+                content =
+                        @Content(
+                                mediaType = "application/json",
+                                examples =
+                                        @ExampleObject(value = "{\"error\": \"Bad credentials\"}")))
+    })
+    @SecurityRequirements
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
             @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
@@ -65,6 +97,20 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(accessToken));
     }
 
+    @Operation(
+            summary = "로그아웃",
+            description =
+                    """
+                    현재 세션을 로그아웃합니다.
+
+                    - 쿠키에 저장된 Refresh Token을 서버에서 삭제합니다.
+                    - 클라이언트 측 쿠키도 만료시킵니다.
+                    - Access Token은 클라이언트에서 직접 삭제해야 합니다.
+                    """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "로그아웃 성공"),
+        @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
+    })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;

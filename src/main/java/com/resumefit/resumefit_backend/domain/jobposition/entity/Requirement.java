@@ -1,5 +1,7 @@
 package com.resumefit.resumefit_backend.domain.jobposition.entity;
 
+import com.resumefit.resumefit_backend.domain.skill.enums.SkillType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

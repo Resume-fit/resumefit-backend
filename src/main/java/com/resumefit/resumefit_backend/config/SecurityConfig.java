@@ -17,6 +17,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -28,21 +33,15 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     private static final String[] SWAGGER_PATHS = {
-        "/swagger-ui/**",
-        "/v3/api-docs/**",
-        "/swagger-resources/**",
-        "/api/auth/login",
-        "/api/resumes/health-check"
+        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**"
     };
 
-    // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
             throws Exception {
         return configuration.getAuthenticationManager();
     }
 
-    // 비밀번호 암호화
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -54,34 +53,69 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(
+                Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+
+        configuration.setAllowedMethods(
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf((auth) -> auth.disable());
-        http.formLogin((auth) -> auth.disable());
-        http.httpBasic((auth) -> auth.disable());
+        // CORS 설정
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
+        // CSRF 비활성화
+        http.csrf(csrf -> csrf.disable());
+
+        // Form Login 비활성화
+        http.formLogin(form -> form.disable());
+
+        // HTTP Basic 비활성화
+        http.httpBasic(basic -> basic.disable());
+
+        // 세션 완전 비활성화 (JSESSIONID 생성 방지)
+        http.sessionManagement(
+                session -> {
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    session.sessionFixation().none(); // 세션 고정 보호 비활성화
+                });
+
+        // URL 접근 권한 - 모든 /api/resumes/** 공개 (테스트용)
         http.authorizeHttpRequests(
-                (auth) ->
+                auth ->
                         auth.requestMatchers(
                                         "/",
                                         "/index.html",
                                         "/api/join",
                                         "/api/auth/login",
+                                        "/api/auth/logout",
                                         "/api/reissue",
                                         "/api/job-positions/**",
-                                        "/api/admin/**")
+                                        "/api/admin/**"
+                                        //                "/api/resumes/**"  // 전체 공개
+                                        )
                                 .permitAll()
-                                // .requestMatchers("/api/join", "/api/auth/login",
-                                // "/api/reissue").permitAll()
-                                // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated());
 
+        // JWT 필터 추가
         http.addFilterBefore(
                 new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
-
-        http.sessionManagement(
-                (session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

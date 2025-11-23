@@ -71,7 +71,7 @@ dependencies {
 	implementation 'com.itextpdf:html2pdf:5.0.4'
 
 	// Swagger UI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 }
 
 tasks.named('test') {

@@ -1,7 +1,7 @@
 package com.resumefit.resumefit_backend.domain.review.entity;
 
-import com.resumefit.resumefit_backend.domain.matching.enums.ReviewType;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
+import com.resumefit.resumefit_backend.domain.review.enums.ReviewType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
