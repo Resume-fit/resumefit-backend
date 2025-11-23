@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "피드백 유형", enumAsRef = true)
 public enum ReviewType {
-
     @Schema(description = "결과가 마음에 들어요")
     LIKE,
 

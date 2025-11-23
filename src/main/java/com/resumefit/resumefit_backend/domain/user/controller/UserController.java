@@ -35,22 +35,21 @@ public class UserController {
     private final S3Service s3Service;
 
     @Operation(
-        summary = "내 정보 조회",
-        description = """
+            summary = "내 정보 조회",
+            description =
+                    """
                     현재 로그인한 사용자의 정보를 조회합니다.
-                    
+
                     **반환 정보:**
                     - 이름, 이메일, 전화번호
                     - 프로필 사진 URL
                     - 학력 정보 (학력, 학교명, 전공)
-                    """
-    )
+                    """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = UserInfoDto.class))
-        ),
+                responseCode = "200",
+                description = "조회 성공",
+                content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
     })
@@ -61,27 +60,26 @@ public class UserController {
     }
 
     @Operation(
-        summary = "내 정보 수정",
-        description = """
+            summary = "내 정보 수정",
+            description =
+                    """
                     현재 로그인한 사용자의 정보를 수정합니다.
-                    
+
                     **수정 가능 항목:**
                     - 이름, 전화번호
                     - 학력 정보 (학력, 학교명, 전공)
                     - 프로필 사진
-                    
+
                     **참고:**
                     - 이메일은 수정할 수 없습니다.
                     - 입력하지 않은 필드는 기존 값이 유지됩니다.
                     - 프로필 사진을 변경하면 기존 사진은 삭제됩니다.
-                    """
-    )
+                    """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "수정 성공",
-            content = @Content(schema = @Schema(implementation = UserInfoDto.class))
-        ),
+                responseCode = "200",
+                description = "수정 성공",
+                content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음"),
         @ApiResponse(responseCode = "500", description = "파일 업로드 실패")

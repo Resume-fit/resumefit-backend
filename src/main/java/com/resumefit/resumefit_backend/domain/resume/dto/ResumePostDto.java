@@ -18,7 +18,9 @@ public class ResumePostDto {
     @Schema(description = "이력서 제목", example = "2024 상반기 백엔드 개발자 이력서")
     private String resumeTitle;
 
-    @Schema(description = "프로필 사진 S3 URL (사전 업로드된 경우)", example = "https://bucket.s3.amazonaws.com/photo.jpg")
+    @Schema(
+            description = "프로필 사진 S3 URL (사전 업로드된 경우)",
+            example = "https://bucket.s3.amazonaws.com/photo.jpg")
     private String profileImageS3Url;
 
     @Schema(description = "간단 자기소개", example = "3년차 백엔드 개발자로 Spring Boot와 JPA를 주로 사용합니다.")

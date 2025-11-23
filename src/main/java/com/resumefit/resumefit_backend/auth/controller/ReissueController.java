@@ -34,35 +34,35 @@ public class ReissueController {
     private final RefreshTokenService refreshTokenService;
 
     @Operation(
-        summary = "토큰 재발급",
-        description = """
+            summary = "토큰 재발급",
+            description =
+                    """
                     Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.
-                    
+
                     - 쿠키에 저장된 Refresh Token을 검증합니다.
                     - 유효한 경우 새로운 Access Token과 Refresh Token을 발급합니다.
                     - 새 Refresh Token은 쿠키에 자동으로 설정됩니다.
-                    
+
                     **사용 시점**: Access Token이 만료되었을 때 자동으로 호출
-                    """
-    )
+                    """)
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "토큰 재발급 성공",
-            content = @Content(schema = @Schema(implementation = ReissueResponseDto.class))
-        ),
+                responseCode = "200",
+                description = "토큰 재발급 성공",
+                content = @Content(schema = @Schema(implementation = ReissueResponseDto.class))),
         @ApiResponse(
-            responseCode = "401",
-            description = "Refresh Token이 없거나 유효하지 않음",
-            content = @Content(
-                mediaType = "text/plain",
-                examples = {
-                    @ExampleObject(name = "토큰 없음", value = "Refresh token is required."),
-                    @ExampleObject(name = "유효하지 않은 토큰", value = "유효하지 않은 토큰입니다."),
-                    @ExampleObject(name = "만료된 토큰", value = "만료된 토큰입니다.")
-                }
-            )
-        )
+                responseCode = "401",
+                description = "Refresh Token이 없거나 유효하지 않음",
+                content =
+                        @Content(
+                                mediaType = "text/plain",
+                                examples = {
+                                    @ExampleObject(
+                                            name = "토큰 없음",
+                                            value = "Refresh token is required."),
+                                    @ExampleObject(name = "유효하지 않은 토큰", value = "유효하지 않은 토큰입니다."),
+                                    @ExampleObject(name = "만료된 토큰", value = "만료된 토큰입니다.")
+                                }))
     })
     @SecurityRequirements
     @PostMapping("/api/reissue")

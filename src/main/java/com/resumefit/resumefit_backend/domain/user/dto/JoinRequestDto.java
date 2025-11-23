@@ -25,29 +25,30 @@ public class JoinRequestDto {
     private LocalDate birth;
 
     @Schema(
-        description = "전화번호 ('-' 없이 10~11자리)",
-        example = "01012345678",
-        requiredMode = Schema.RequiredMode.REQUIRED
-    )
+            description = "전화번호 ('-' 없이 10~11자리)",
+            example = "01012345678",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "전화번호는 필수입니다.")
     @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 '-' 없이 10~11자리 숫자로 입력해주세요.")
     private String phoneNumber;
 
-    @Schema(description = "이메일 (로그인 ID로 사용)", example = "user@example.com", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(
+            description = "이메일 (로그인 ID로 사용)",
+            example = "user@example.com",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "유효한 이메일 형식이 아닙니다.")
     private String email;
 
     @Schema(
-        description = "비밀번호 (8자 이상, 영문/숫자/특수문자 포함)",
-        example = "Password123!",
-        requiredMode = Schema.RequiredMode.REQUIRED
-    )
+            description = "비밀번호 (8자 이상, 영문/숫자/특수문자 포함)",
+            example = "Password123!",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
     @Pattern(
-        regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,64}$",
-        message = "비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.")
+            regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,64}$",
+            message = "비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.")
     private String password;
 
     @Schema(description = "최종 학력", example = "BACHELOR_DEGREE")

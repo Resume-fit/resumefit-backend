@@ -33,9 +33,8 @@ public class JobPositionDetailDto {
     private String url;
 
     @Schema(
-        description = "주요 업무 내용",
-        example = "- 결제 시스템 백엔드 개발 및 운영\n- API 설계 및 구현\n- 데이터베이스 설계 및 최적화"
-    )
+            description = "주요 업무 내용",
+            example = "- 결제 시스템 백엔드 개발 및 운영\n- API 설계 및 구현\n- 데이터베이스 설계 및 최적화")
     private String mainJob;
 
     @Schema(description = "자격 요건 및 우대 사항 목록")

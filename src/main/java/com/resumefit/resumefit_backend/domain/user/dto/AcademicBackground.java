@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @Schema(description = "최종 학력", enumAsRef = true)
 public enum AcademicBackground {
-
     @Schema(description = "고등학교 졸업")
     HIGH_SCHOOL("고등학교 졸업"),
 

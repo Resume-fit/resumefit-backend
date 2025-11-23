@@ -29,8 +29,7 @@ public class ResumeDetailDto {
     private LocalDateTime updatedAt;
 
     @Schema(
-        description = "PDF 열람용 Pre-signed URL (5분간 유효)",
-        example = "https://bucket.s3.ap-northeast-2.amazonaws.com/uuid_resume.pdf?X-Amz-..."
-    )
+            description = "PDF 열람용 Pre-signed URL (5분간 유효)",
+            example = "https://bucket.s3.ap-northeast-2.amazonaws.com/uuid_resume.pdf?X-Amz-...")
     private String pdfViewUrl;
 }

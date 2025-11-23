@@ -33,14 +33,12 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     private static final String[] SWAGGER_PATHS = {
-        "/swagger-ui/**",
-        "/v3/api-docs/**",
-        "/swagger-resources/**"
+        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**"
     };
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-        throws Exception {
+            throws Exception {
         return configuration.getAuthenticationManager();
     }
 
@@ -58,23 +56,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "http://127.0.0.1:3000"
-        ));
+        configuration.setAllowedOrigins(
+                Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
 
-        configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
-        ));
+        configuration.setAllowedMethods(
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
-        configuration.setExposedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type"
-        ));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -97,32 +89,33 @@ public class SecurityConfig {
         http.httpBasic(basic -> basic.disable());
 
         // 세션 완전 비활성화 (JSESSIONID 생성 방지)
-        http.sessionManagement(session -> {
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-            session.sessionFixation().none();  // 세션 고정 보호 비활성화
-        });
+        http.sessionManagement(
+                session -> {
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    session.sessionFixation().none(); // 세션 고정 보호 비활성화
+                });
 
         // URL 접근 권한 - 모든 /api/resumes/** 공개 (테스트용)
-        http.authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/",
-                "/index.html",
-                "/api/join",
-                "/api/auth/login",
-                "/api/auth/logout",
-                "/api/reissue",
-                "/api/job-positions/**",
-                "/api/admin/**"
-//                "/api/resumes/**"  // 전체 공개
-            ).permitAll()
-            .anyRequest().authenticated()
-        );
+        http.authorizeHttpRequests(
+                auth ->
+                        auth.requestMatchers(
+                                        "/",
+                                        "/index.html",
+                                        "/api/join",
+                                        "/api/auth/login",
+                                        "/api/auth/logout",
+                                        "/api/reissue",
+                                        "/api/job-positions/**",
+                                        "/api/admin/**"
+                                        //                "/api/resumes/**"  // 전체 공개
+                                        )
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated());
 
         // JWT 필터 추가
         http.addFilterBefore(
-            new JwtFilter(jwtUtil, userRepository),
-            UsernamePasswordAuthenticationFilter.class
-        );
+                new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -11,8 +11,7 @@ import lombok.Getter;
 public class ReissueResponseDto {
 
     @Schema(
-        description = "새로 발급된 JWT Access Token",
-        example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    )
+            description = "새로 발급된 JWT Access Token",
+            example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String accessToken;
 }
