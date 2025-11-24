@@ -1,6 +1,8 @@
 package com.resumefit.resumefit_backend.domain.resume.entity;
 
+import com.resumefit.resumefit_backend.domain.matching.entity.Matching;
 import com.resumefit.resumefit_backend.domain.resumeskill.entity.ResumeSkill;
+import com.resumefit.resumefit_backend.domain.review.entity.Review;
 import com.resumefit.resumefit_backend.domain.user.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -50,8 +52,17 @@ public class Resume {
     private LocalDateTime createdAt; // 생성 일시
     private LocalDateTime updatedAt; // 최종 수정 일시
 
+    // ResumeSkill 관계 (기존)
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResumeSkill> skills = new ArrayList<>();
+
+    // Matching 관계 - CASCADE 삭제 적용
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Matching> matchings = new ArrayList<>();
+
+    // Review 관계 추가 - CASCADE 삭제 적용
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
