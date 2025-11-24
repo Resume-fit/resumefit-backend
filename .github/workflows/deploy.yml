@@ -62,6 +62,8 @@ jobs:
               -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_S3_SECRET_KEY }}" \
               -e CLOUD_AWS_S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}" \
               -e CLOUD_AWS_REGION_STATIC="ap-northeast-2" \
+              -e SPRING_JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e API_FASTAPI_BASE_URL="${{ secrets.FASTAPI_BASE_URL }}" \
               --name resumefit-backend \
               --restart unless-stopped \
               694282668393.dkr.ecr.ap-northeast-2.amazonaws.com/resumefit-backend:latest

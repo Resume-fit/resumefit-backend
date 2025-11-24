@@ -21,6 +21,7 @@ import com.resumefit.resumefit_backend.domain.resume.dto.ResumeSummaryDto;
 import com.resumefit.resumefit_backend.domain.resume.entity.Resume;
 import com.resumefit.resumefit_backend.domain.resume.mapper.ResumeMapper;
 import com.resumefit.resumefit_backend.domain.resume.repository.ResumeRepository;
+import com.resumefit.resumefit_backend.domain.review.repository.ReviewRepository;
 import com.resumefit.resumefit_backend.domain.user.dto.CustomUserDetails;
 import com.resumefit.resumefit_backend.domain.user.entity.User;
 import com.resumefit.resumefit_backend.domain.user.repository.UserRepository;
@@ -60,6 +61,7 @@ public class ResumeService {
     private final HtmlGenerationService htmlGenerationService;
     private final ResumeMapper resumeMapper;
     private final MatchingRepository matchingRepository;
+    private final ReviewRepository reviewRepository;
     private final JobPositionRepository jobPositionRepository;
     private final RestClient fastApiRestClient;
     private final JobPositionMapper jobPositionMapper;
@@ -149,8 +151,12 @@ public class ResumeService {
         return resumeMapper.toResumeSummaryDtoList(resumeList);
     }
 
+    @Transactional
     public void deleteResume(Long resumeId, CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
+
+        log.info("=== 이력서 삭제 시작 ===");
+        log.info("Resume ID: {}, User ID: {}", resumeId, userId);
 
         // Resume 엔티티 조회
         Resume resume =
@@ -160,19 +166,37 @@ public class ResumeService {
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
+            log.error("권한 없음 - Resume Owner: {}, Requester: {}", resume.getUser().getId(), userId);
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        // S3 파일 삭제
-        if (resume.getFileKey() != null && !resume.getFileKey().isBlank()) {
-            try {
-                s3Service.deleteFile(resume.getFileKey());
-            } catch (Exception e) {
-                throw new CustomException(ErrorCode.S3_DELETE_FAILED);
-            }
-        }
+        try {
+            // 1. 리뷰 먼저 삭제 (Foreign Key 제약 조건 해결)
+            log.info("리뷰 삭제 시작 - Resume ID: {}", resumeId);
+            reviewRepository.deleteByResume(resume);
+            log.info("리뷰 삭제 완료");
 
-        resumeRepository.delete(resume);
+            // 2. 매칭 결과 삭제 (Foreign Key 제약 조건 해결)
+            log.info("매칭 결과 삭제 시작 - Resume ID: {}", resumeId);
+            matchingRepository.deleteByResume(resume);
+            log.info("매칭 결과 삭제 완료");
+
+            // 3. S3 파일 삭제
+            if (resume.getFileKey() != null && !resume.getFileKey().isBlank()) {
+                log.info("S3 파일 삭제 시작 - Key: {}", resume.getFileKey());
+                s3Service.deleteFile(resume.getFileKey());
+                log.info("S3 파일 삭제 완료");
+            }
+
+            // 4. 이력서 삭제
+            log.info("이력서 DB 삭제 시작 - Resume ID: {}", resumeId);
+            resumeRepository.delete(resume);
+            log.info("이력서 삭제 완료 - Resume ID: {}", resumeId);
+
+        } catch (Exception e) {
+            log.error("이력서 삭제 실패 - Resume ID: {}, Error: {}", resumeId, e.getMessage(), e);
+            throw new CustomException(ErrorCode.S3_DELETE_FAILED);
+        }
     }
 
     @Transactional(readOnly = true) // DB 읽기 전용

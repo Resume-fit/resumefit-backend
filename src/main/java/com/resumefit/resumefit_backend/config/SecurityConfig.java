@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -95,10 +96,15 @@ public class SecurityConfig {
                     session.sessionFixation().none(); // 세션 고정 보호 비활성화
                 });
 
-        // URL 접근 권한 - 모든 /api/resumes/** 공개 (테스트용)
+        // URL 접근 권한
         http.authorizeHttpRequests(
                 auth ->
-                        auth.requestMatchers(
+                        auth
+                                // OPTIONS 요청은 모두 허용 (CORS preflight)
+                                .requestMatchers(HttpMethod.OPTIONS, "/**")
+                                .permitAll()
+                                // 인증 없이 접근 가능한 경로
+                                .requestMatchers(
                                         "/",
                                         "/index.html",
                                         "/api/join",
@@ -106,10 +112,9 @@ public class SecurityConfig {
                                         "/api/auth/logout",
                                         "/api/reissue",
                                         "/api/job-positions/**",
-                                        "/api/admin/**"
-                                        //                "/api/resumes/**"  // 전체 공개
-                                        )
+                                        "/api/admin/**")
                                 .permitAll()
+                                // 나머지는 인증 필요
                                 .anyRequest()
                                 .authenticated());
 
