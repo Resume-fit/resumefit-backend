@@ -17,7 +17,9 @@ public class UserInfoDto {
     @Schema(description = "전화번호", example = "01012345678")
     private String phoneNumber;
 
-    @Schema(description = "프로필 사진 URL", example = "https://bucket.s3.ap-northeast-2.amazonaws.com/uuid_photo.jpg")
+    @Schema(
+            description = "프로필 사진 URL",
+            example = "https://bucket.s3.ap-northeast-2.amazonaws.com/uuid_photo.jpg")
     private String photo;
 
     @Schema(description = "최종 학력", example = "BACHELOR_DEGREE")

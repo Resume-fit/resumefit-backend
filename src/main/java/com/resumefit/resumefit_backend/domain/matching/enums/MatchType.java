@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Schema(description = "매칭 유형", enumAsRef = true)
 public enum MatchType {
-
     @Schema(description = "현재 역량으로 지원 가능")
     SUITABLE("적합"),
 

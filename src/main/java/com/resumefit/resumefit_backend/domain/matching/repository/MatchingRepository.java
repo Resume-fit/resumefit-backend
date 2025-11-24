@@ -13,16 +13,11 @@ import java.util.List;
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
-    /**
-     * 특정 이력서의 모든 매칭 결과 삭제
-     * @Modifying과 @Transactional 필수
-     */
+    /** 특정 이력서의 모든 매칭 결과 삭제 @Modifying과 @Transactional 필수 */
     @Transactional
     @Modifying
     void deleteByResume(Resume resume);
 
-    /**
-     * 특정 이력서의 모든 매칭 결과 조회
-     */
+    /** 특정 이력서의 모든 매칭 결과 조회 */
     List<Matching> findAllByResume(Resume resume);
 }

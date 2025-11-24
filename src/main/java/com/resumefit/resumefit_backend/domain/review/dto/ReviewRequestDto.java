@@ -14,11 +14,7 @@ import java.util.List;
 @Schema(description = "매칭 결과 피드백 요청 DTO")
 public class ReviewRequestDto {
 
-    @Schema(
-        description = "피드백 유형",
-        example = "LIKE",
-        requiredMode = Schema.RequiredMode.REQUIRED
-    )
+    @Schema(description = "피드백 유형", example = "LIKE", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private ReviewType reviewType;
 

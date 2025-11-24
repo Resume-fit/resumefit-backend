@@ -11,8 +11,7 @@ import lombok.Getter;
 public class LoginResponseDto {
 
     @Schema(
-        description = "JWT Access Token (Bearer 토큰으로 사용)",
-        example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    )
+            description = "JWT Access Token (Bearer 토큰으로 사용)",
+            example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String accessToken;
 }

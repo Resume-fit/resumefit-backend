@@ -71,9 +71,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         User user =
-            userRepository
-                .findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String photoBase64 = null;
         if (user.getPhotoKey() != null && !user.getPhotoKey().isBlank()) {
@@ -84,19 +84,19 @@ public class ResumeService {
         }
 
         String htmlContent =
-            htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
+                htmlGenerationService.generateResumeHtml(user, resumePostDto, photoBase64);
 
         PDFInfoDto pdfInfoDto = htmlToPdf(htmlContent, user, resumePostDto);
 
         Resume resume =
-            Resume.builder()
-                .user(user)
-                .title(resumePostDto.getResumeTitle())
-                .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
-                .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+                Resume.builder()
+                        .user(user)
+                        .title(resumePostDto.getResumeTitle())
+                        .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
+                        .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build();
 
         Resume savedResume = resumeRepository.save(resume);
     }
@@ -112,7 +112,7 @@ public class ResumeService {
             byte[] fontBytes = fontResource.getInputStream().readAllBytes();
 
             FontProgram fontProgram =
-                FontProgramFactory.createFont(fontBytes, true); // true = embed
+                    FontProgramFactory.createFont(fontBytes, true); // true = embed
             fontProvider.addFont(fontProgram);
 
             properties.setFontProvider(fontProvider);
@@ -126,12 +126,12 @@ public class ResumeService {
         String fileKey;
         try {
             String desiredFileName =
-                user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
-                    + "_"
-                    + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
-                    + "_"
-                    + System.currentTimeMillis()
-                    + ".pdf";
+                    user.getName().replaceAll("[^a-zA-Z0-9가-힣]", "_") // 특수문자 제거
+                            + "_"
+                            + resumePostDto.getResumeTitle().replaceAll("[^a-zA-Z0-9가-힣]", "_")
+                            + "_"
+                            + System.currentTimeMillis()
+                            + ".pdf";
             fileKey = s3Service.uploadPdfBytes(pdfBytes, desiredFileName);
         } catch (Exception e) {
             throw new CustomException(ErrorCode.S3_UPLOAD_FAILED);
@@ -144,9 +144,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         User user =
-            userRepository
-                .findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         List<Resume> resumeList = resumeRepository.findByUser(user);
         return resumeMapper.toResumeSummaryDtoList(resumeList);
     }
@@ -160,14 +160,13 @@ public class ResumeService {
 
         // Resume 엔티티 조회
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
-            log.error("권한 없음 - Resume Owner: {}, Requester: {}",
-                resume.getUser().getId(), userId);
+            log.error("권한 없음 - Resume Owner: {}, Requester: {}", resume.getUser().getId(), userId);
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
@@ -205,9 +204,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -226,12 +225,12 @@ public class ResumeService {
         }
 
         return ResumeDetailDto.builder()
-            .title(resume.getTitle())
-            .fileKey(resume.getFileKey())
-            .createdAt(resume.getCreatedAt())
-            .updatedAt(resume.getUpdatedAt())
-            .pdfViewUrl(presignedUrl)
-            .build();
+                .title(resume.getTitle())
+                .fileKey(resume.getFileKey())
+                .createdAt(resume.getCreatedAt())
+                .updatedAt(resume.getUpdatedAt())
+                .pdfViewUrl(presignedUrl)
+                .build();
     }
 
     @Transactional
@@ -240,9 +239,9 @@ public class ResumeService {
         Long userId = userDetails.getId();
 
         User user =
-            userRepository
-                .findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (file.isEmpty() || !Objects.equals(file.getContentType(), "application/pdf")) {
             throw new CustomException(ErrorCode.NOT_A_PDF_FILE);
@@ -261,20 +260,20 @@ public class ResumeService {
 
         // PDFInfoDto 생성
         PDFInfoDto pdfInfoDto =
-            PDFInfoDto.builder()
-                .fileUrl(s3Service.getFileUrl(fileKey))
-                .fileKey(fileKey)
-                .build();
+                PDFInfoDto.builder()
+                        .fileUrl(s3Service.getFileUrl(fileKey))
+                        .fileKey(fileKey)
+                        .build();
 
         Resume resume =
-            Resume.builder()
-                .user(user)
-                .title(title)
-                .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
-                .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+                Resume.builder()
+                        .user(user)
+                        .title(title)
+                        .fileUrl(pdfInfoDto.getFileUrl()) // S3 URL 저장
+                        .fileKey(pdfInfoDto.getFileKey()) // S3 Key 저장 (삭제 시 필요)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build();
 
         resumeRepository.save(resume);
     }
@@ -283,9 +282,9 @@ public class ResumeService {
     public List<MatchingResponseDto> matchResume(Long resumeId, CustomUserDetails userDetails) {
 
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(userDetails.getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -304,14 +303,14 @@ public class ResumeService {
             Map<String, String> requestBody = Map.of("full_path", s3UrlForFastApi);
 
             Map<String, List<AiMatchDetailDto>> aiResponse =
-                fastApiRestClient
-                    .post()
-                    .uri("/api/ocr")
-                    .body(requestBody)
-                    .retrieve()
-                    .body(
-                        new ParameterizedTypeReference<
-                            Map<String, List<AiMatchDetailDto>>>() {});
+                    fastApiRestClient
+                            .post()
+                            .uri("/api/ocr")
+                            .body(requestBody)
+                            .retrieve()
+                            .body(
+                                    new ParameterizedTypeReference<
+                                            Map<String, List<AiMatchDetailDto>>>() {});
 
             log.info("Deleting old matches for Resume ID: {}", resumeId);
             matchingRepository.deleteByResume(resume);
@@ -334,33 +333,33 @@ public class ResumeService {
             }
 
             List<Matching> savedMatches =
-                matchingRepository.saveAll(
-                    newMatches.stream()
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()));
+                    matchingRepository.saveAll(
+                            newMatches.stream()
+                                    .filter(Objects::nonNull)
+                                    .collect(Collectors.toList()));
             log.info("Saved {} new matches for Resume ID: {}", savedMatches.size(), resumeId);
 
             return savedMatches.stream()
-                .map(
-                    match -> {
-                        JobPosition job = match.getJobPosition();
+                    .map(
+                            match -> {
+                                JobPosition job = match.getJobPosition();
 
-                        JobPositionSummaryDto summaryDto =
-                            jobPositionMapper.toJobPositionSummaryDto(job);
+                                JobPositionSummaryDto summaryDto =
+                                        jobPositionMapper.toJobPositionSummaryDto(job);
 
-                        return new MatchingResponseDto(
-                            summaryDto,
-                            match.getMatchType().name(), // Enum -> String
-                            match.getComment());
-                    })
-                .collect(Collectors.toList());
+                                return new MatchingResponseDto(
+                                        summaryDto,
+                                        match.getMatchType().name(), // Enum -> String
+                                        match.getComment());
+                            })
+                    .collect(Collectors.toList());
 
         } catch (Exception e) {
             log.error(
-                "FastAPI 매칭 호출 또는 저장 실패. Resume ID: {}. Error: {}",
-                resumeId,
-                e.getMessage(),
-                e);
+                    "FastAPI 매칭 호출 또는 저장 실패. Resume ID: {}. Error: {}",
+                    resumeId,
+                    e.getMessage(),
+                    e);
             throw new CustomException(ErrorCode.EXTERNAL_API_CALL_FAILED);
         }
     }
@@ -368,21 +367,21 @@ public class ResumeService {
     private Matching createMatchingEntity(Resume resume, AiMatchDetailDto dto) {
         // DTO의 jobPositionId로 실제 JobPosition 엔티티 조회
         JobPosition jobPosition =
-            jobPositionRepository.findById(dto.getJobPositionId()).orElse(null); // ID가 없으면 null
+                jobPositionRepository.findById(dto.getJobPositionId()).orElse(null); // ID가 없으면 null
 
         if (jobPosition == null) {
             log.warn(
-                "Matching result returned non-existent JobPosition ID: {}",
-                dto.getJobPositionId());
+                    "Matching result returned non-existent JobPosition ID: {}",
+                    dto.getJobPositionId());
             return null; // 존재하지 않는 공고 ID는 건너뜀
         }
 
         return Matching.builder()
-            .resume(resume)
-            .jobPosition(jobPosition)
-            .matchType(dto.getMatchType()) // DTO에서 이미 Enum으로 변환됨
-            .comment(dto.getComment())
-            .build();
+                .resume(resume)
+                .jobPosition(jobPosition)
+                .matchType(dto.getMatchType()) // DTO에서 이미 Enum으로 변환됨
+                .comment(dto.getComment())
+                .build();
     }
 
     public Map<String, String> checkFastApiHealth() {

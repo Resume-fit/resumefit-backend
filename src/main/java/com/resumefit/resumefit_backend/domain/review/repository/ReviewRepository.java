@@ -11,10 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    /**
-     * 특정 이력서의 모든 리뷰 삭제
-     * @Modifying과 @Transactional 필수
-     */
+    /** 특정 이력서의 모든 리뷰 삭제 @Modifying과 @Transactional 필수 */
     @Transactional
     @Modifying
     void deleteByResume(Resume resume);
