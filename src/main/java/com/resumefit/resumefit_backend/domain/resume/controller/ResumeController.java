@@ -292,7 +292,7 @@ public class ResumeController {
                                         @ExampleObject(
                                                 value =
                                                         "{\"status\": \"UP\", \"message\":"
-                                                            + " \"FastAPI is responding.\"}"))),
+                                                                + " \"FastAPI is responding.\"}"))),
         @ApiResponse(
                 responseCode = "503",
                 description = "서버 연결 실패",
@@ -303,7 +303,7 @@ public class ResumeController {
                                         @ExampleObject(
                                                 value =
                                                         "{\"status\": \"DOWN\", \"message\":"
-                                                            + " \"Connection refused\"}")))
+                                                                + " \"Connection refused\"}")))
     })
     @SecurityRequirements
     @GetMapping("/health-check")
