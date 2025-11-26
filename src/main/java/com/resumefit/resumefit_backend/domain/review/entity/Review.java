@@ -44,10 +44,13 @@ public class Review {
     @Column(nullable = false)
     private ReviewType reviewType;
 
-    @CreationTimestamp // 피드백 제출 시간
+    @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "TEXT") // 매칭된 공고 ID 직렬화
+    @Column(columnDefinition = "TEXT")
     private String recommendedJobPositionIds;
+
+    @Column(columnDefinition = "TEXT")  // 추가
+    private String otherComment;  // "기타" 선택 시 사용자가 직접 입력하는 내용
 }

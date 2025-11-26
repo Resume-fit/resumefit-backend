@@ -195,18 +195,23 @@ public class ResumeController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "매칭 결과 피드백 제출",
-            description =
-                    """
-                    이력서 매칭 결과에 대한 피드백을 제출합니다.
 
-                    **피드백 유형:**
-                    - LIKE: 결과가 마음에 들어요
-                    - RESUME_MISMATCH: 제 이력서와 맞지 않아요
-                    - FIELD_MISMATCH: 제 분야와 맞지 않아요
-                    - COMPANY_MISMATCH: 회사가 마음에 들지 않아요
-                    """)
+    @Operation(
+        summary = "매칭 결과 피드백 제출",
+        description =
+            """
+            이력서 매칭 결과에 대한 피드백을 제출합니다.
+
+            **피드백 유형:**
+            - LIKE: 결과가 마음에 들어요
+            - RESUME_MISMATCH: 제 이력서와 잘 맞지 않아요
+            - FIELD_MISMATCH: 제 분야/직무와 맞지 않아요
+            - CRITERIA_UNCLEAR: 추천 기준이 이해되지 않아요
+            - OTHER: 기타 (직접 입력)
+
+            **참고:**
+            - OTHER 선택 시 otherComment 필드 필수 입력
+            """)
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "피드백 제출 성공"),
         @ApiResponse(responseCode = "401", description = "인증되지 않은 요청 또는 권한 없음"),

@@ -160,9 +160,9 @@ public class ResumeService {
 
         // Resume 엔티티 조회
         Resume resume =
-                resumeRepository
-                        .findById(resumeId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+            resumeRepository
+                .findById(resumeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
@@ -170,32 +170,30 @@ public class ResumeService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
+        String fileKey = resume.getFileKey();
+
         try {
-            // 1. 리뷰 먼저 삭제 (Foreign Key 제약 조건 해결)
-            log.info("리뷰 삭제 시작 - Resume ID: {}", resumeId);
-            reviewRepository.deleteByResume(resume);
-            log.info("리뷰 삭제 완료");
-
-            // 2. 매칭 결과 삭제 (Foreign Key 제약 조건 해결)
-            log.info("매칭 결과 삭제 시작 - Resume ID: {}", resumeId);
-            matchingRepository.deleteByResume(resume);
-            log.info("매칭 결과 삭제 완료");
-
-            // 3. S3 파일 삭제
-            if (resume.getFileKey() != null && !resume.getFileKey().isBlank()) {
-                log.info("S3 파일 삭제 시작 - Key: {}", resume.getFileKey());
-                s3Service.deleteFile(resume.getFileKey());
-                log.info("S3 파일 삭제 완료");
-            }
-
-            // 4. 이력서 삭제
-            log.info("이력서 DB 삭제 시작 - Resume ID: {}", resumeId);
+            // 1. DB에서 이력서 삭제 (CASCADE로 Review, Matching 자동 삭제됨)
+            log.info("이력서 DB 삭제 시작 - Resume ID: {} (CASCADE로 연관 데이터 자동 삭제)", resumeId);
             resumeRepository.delete(resume);
-            log.info("이력서 삭제 완료 - Resume ID: {}", resumeId);
+            log.info("이력서 DB 삭제 완료 - Resume ID: {}", resumeId);
+
+            // 2. S3 파일 삭제 (DB 삭제 후)
+            if (fileKey != null && !fileKey.isBlank()) {
+                log.info("S3 파일 삭제 시작 - Key: {}", fileKey);
+                try {
+                    s3Service.deleteFile(fileKey);
+                    log.info("S3 파일 삭제 완료 - Key: {}", fileKey);
+                } catch (Exception s3Exception) {
+                    // S3 삭제 실패해도 DB는 이미 삭제됨
+                    log.warn("S3 파일 삭제 실패 (DB는 삭제됨) - Key: {}, Error: {}",
+                        fileKey, s3Exception.getMessage());
+                }
+            }
 
         } catch (Exception e) {
             log.error("이력서 삭제 실패 - Resume ID: {}, Error: {}", resumeId, e.getMessage(), e);
-            throw new CustomException(ErrorCode.S3_DELETE_FAILED);
+            throw new CustomException(ErrorCode.RESUME_DELETE_FAILED);
         }
     }
 

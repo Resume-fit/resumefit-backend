@@ -87,7 +87,7 @@ public class AuthController {
         String role = auth.getAuthority();
 
         // JWTUtil을 사용하여 Access Token 생성 (유효기간 1시간으로 설정)
-        String accessToken = jwtUtil.createJwt(username, role, 60 * 60 * 1000L);
+        String accessToken = jwtUtil.createJwt(username, role, 2 * 60 * 60 * 1000L);
         String refreshToken = refreshTokenService.createAndSaveRefreshToken(username, role);
 
         // 리프레쉬 토큰을 HttpOnly 쿠키에 담아 응답
