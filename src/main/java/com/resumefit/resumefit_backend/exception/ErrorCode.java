@@ -10,6 +10,7 @@ public enum ErrorCode {
     // 400 Bad Request: 잘못된 요청
     NOT_A_NEWS_ARTICLE(HttpStatus.BAD_REQUEST, "제공된 URL은 뉴스 기사가 아닙니다."),
     NOT_A_PDF_FILE(HttpStatus.BAD_REQUEST, "업로드된 파일이 PDF 형식이 아닙니다."),
+    OTHER_COMMENT_REQUIRED(HttpStatus.BAD_REQUEST, "기타 선택 시 의견을 입력해야 합니다."),
 
     // 401 Unauthorized: 인증되지 않은 사용자
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요한 요청입니다."),
@@ -20,6 +21,7 @@ public enum ErrorCode {
     // 404 Not Found: 리소스를 찾을 수 없음
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자를 찾을 수 없습니다."),
     RESUME_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서를 찾을 수 없습니다."),
+    RESUME_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이력서 삭제에 실패했습니다."),
     JOB_POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 직무를 찾을 수 없습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "이력서 PDF의 파일 키가 없습니다."),
 
@@ -32,8 +34,8 @@ public enum ErrorCode {
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드에 실패했습니다."),
     S3_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 삭제에 실패했습니다."),
     JSON_SERIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 직렬화에 실패했습니다."),
-    EXTERNAL_API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 호출에 실패했습니다.");
-
+    EXTERNAL_API_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 호출에 실패했습니다."),
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 리뷰를 작성하셨습니다.");
     private final HttpStatus status; // HTTP 상태 코드
     private final String message; // 에러 메시지
 

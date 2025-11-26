@@ -59,10 +59,10 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(
                 Arrays.asList(
-                    "http://localhost:3000",
-                    "http://127.0.0.1:3000",
-                    "https://resumefit.org",
-                    "https://www.resumefit.org"));
+                        "http://localhost:3000",
+                        "http://127.0.0.1:3000",
+                        "https://resumefit.org",
+                        "https://www.resumefit.org"));
 
         configuration.setAllowedMethods(
                 Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

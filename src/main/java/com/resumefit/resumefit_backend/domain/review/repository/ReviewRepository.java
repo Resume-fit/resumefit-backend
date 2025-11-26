@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -15,4 +18,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Transactional
     @Modifying
     void deleteByResume(Resume resume);
+
+    boolean existsByResumeId(Long resumeId);
+
+    // Resume로 리뷰 목록 조회
+    List<Review> findByResume(Resume resume);
+
+    // Resume로 단일 리뷰 조회 (최신순)
+    Optional<Review> findFirstByResumeOrderByIdDesc(Resume resume);
 }
