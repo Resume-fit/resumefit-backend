@@ -51,6 +51,6 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String recommendedJobPositionIds;
 
-    @Column(columnDefinition = "TEXT")  // 추가
-    private String otherComment;  // "기타" 선택 시 사용자가 직접 입력하는 내용
+    @Column(columnDefinition = "TEXT") // 추가
+    private String otherComment; // "기타" 선택 시 사용자가 직접 입력하는 내용
 }

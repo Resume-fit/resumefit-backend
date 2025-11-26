@@ -160,9 +160,9 @@ public class ResumeService {
 
         // Resume 엔티티 조회
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         // 현재 사용자와 Resume 소유자 확인
         if (!resume.getUser().getId().equals(userId)) {
@@ -186,8 +186,10 @@ public class ResumeService {
                     log.info("S3 파일 삭제 완료 - Key: {}", fileKey);
                 } catch (Exception s3Exception) {
                     // S3 삭제 실패해도 DB는 이미 삭제됨
-                    log.warn("S3 파일 삭제 실패 (DB는 삭제됨) - Key: {}, Error: {}",
-                        fileKey, s3Exception.getMessage());
+                    log.warn(
+                            "S3 파일 삭제 실패 (DB는 삭제됨) - Key: {}, Error: {}",
+                            fileKey,
+                            s3Exception.getMessage());
                 }
             }
 

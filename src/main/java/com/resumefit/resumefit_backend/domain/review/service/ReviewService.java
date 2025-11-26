@@ -31,12 +31,12 @@ public class ReviewService {
 
     @Transactional
     public void submitReview(
-        Long resumeId, ReviewRequestDto reviewDto, CustomUserDetails userDetails) {
+            Long resumeId, ReviewRequestDto reviewDto, CustomUserDetails userDetails) {
 
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(userDetails.getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -44,19 +44,19 @@ public class ReviewService {
 
         // OTHER 타입일 때 otherComment 필수 검증 추가
         if (reviewDto.getReviewType() == ReviewType.OTHER
-            && (reviewDto.getOtherComment() == null || reviewDto.getOtherComment().isBlank())) {
+                && (reviewDto.getOtherComment() == null || reviewDto.getOtherComment().isBlank())) {
             throw new CustomException(ErrorCode.OTHER_COMMENT_REQUIRED);
         }
 
         String recommendedIdsJson = null;
         if (reviewDto.getRecommendedJobPositionIds() != null
-            && !reviewDto.getRecommendedJobPositionIds().isEmpty()) {
+                && !reviewDto.getRecommendedJobPositionIds().isEmpty()) {
             try {
                 recommendedIdsJson =
-                    objectMapper.writeValueAsString(reviewDto.getRecommendedJobPositionIds());
+                        objectMapper.writeValueAsString(reviewDto.getRecommendedJobPositionIds());
             } catch (JsonProcessingException e) {
                 log.error(
-                    "Failed to serialize recommendedJobPositionIds for resumeId: {}", resumeId);
+                        "Failed to serialize recommendedJobPositionIds for resumeId: {}", resumeId);
                 throw new CustomException(ErrorCode.JSON_SERIALIZATION_FAILED);
             }
         }
@@ -80,12 +80,12 @@ public class ReviewService {
             log.info("새 리뷰 생성 - Resume ID: {}", resumeId);
 
             Review review =
-                Review.builder()
-                    .resume(resume)
-                    .reviewType(reviewDto.getReviewType())
-                    .recommendedJobPositionIds(recommendedIdsJson)
-                    .otherComment(reviewDto.getOtherComment())
-                    .build();
+                    Review.builder()
+                            .resume(resume)
+                            .reviewType(reviewDto.getReviewType())
+                            .recommendedJobPositionIds(recommendedIdsJson)
+                            .otherComment(reviewDto.getOtherComment())
+                            .build();
 
             reviewRepository.save(review);
             log.info("리뷰 생성 완료 - Review Type: {}", reviewDto.getReviewType());
@@ -95,9 +95,9 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public boolean checkReviewExists(Long resumeId, CustomUserDetails userDetails) {
         Resume resume =
-            resumeRepository
-                .findById(resumeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
+                resumeRepository
+                        .findById(resumeId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.RESUME_NOT_FOUND));
 
         if (!resume.getUser().getId().equals(userDetails.getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);

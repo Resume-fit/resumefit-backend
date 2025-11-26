@@ -195,11 +195,10 @@ public class ResumeController {
         return ResponseEntity.ok().build();
     }
 
-
     @Operation(
-        summary = "매칭 결과 피드백 제출",
-        description =
-            """
+            summary = "매칭 결과 피드백 제출",
+            description =
+                    """
             이력서 매칭 결과에 대한 피드백을 제출합니다.
 
             **피드백 유형:**

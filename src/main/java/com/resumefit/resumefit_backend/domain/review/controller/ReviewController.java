@@ -24,9 +24,9 @@ public class ReviewController {
     @Operation(summary = "리뷰 제출", description = "이력서 매칭 결과에 대한 리뷰를 제출합니다.")
     @PostMapping("/{resumeId}")
     public ResponseEntity<String> submitReview(
-        @PathVariable Long resumeId,
-        @RequestBody ReviewRequestDto reviewDto,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long resumeId,
+            @RequestBody ReviewRequestDto reviewDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         reviewService.submitReview(resumeId, reviewDto, userDetails);
         return ResponseEntity.ok("리뷰가 성공적으로 제출되었습니다.");
@@ -35,8 +35,7 @@ public class ReviewController {
     @Operation(summary = "리뷰 존재 여부 확인", description = "특정 이력서에 대한 리뷰가 이미 존재하는지 확인합니다.")
     @GetMapping("/check/{resumeId}")
     public ResponseEntity<Boolean> checkReviewExists(
-        @PathVariable Long resumeId,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @PathVariable Long resumeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         boolean exists = reviewService.checkReviewExists(resumeId, userDetails);
         return ResponseEntity.ok(exists);

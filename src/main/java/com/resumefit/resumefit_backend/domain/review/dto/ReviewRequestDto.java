@@ -23,5 +23,5 @@ public class ReviewRequestDto {
     private List<Long> recommendedJobPositionIds;
 
     @Schema(description = "기타 의견 (reviewType이 OTHER일 때 필수)", example = "추천된 회사 규모가 너무 작아요")
-    private String otherComment;  // 추가
+    private String otherComment; // 추가
 }
